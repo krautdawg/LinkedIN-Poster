@@ -99,15 +99,6 @@ def get_posts():
     try:
         articles = get_recent_news()
         response = create_linkedin_posts(articles)
-        
-        # Send to Telegram after creating posts
-        async def send_to_telegram():
-            from telegram.ext import Application
-            from telegram import send_posts
-            app = Application.builder().token(os.environ.get('TELEGRAM_BOT_TOKEN')).build()
-            await send_posts(app, response)
-        
-        asyncio.run(send_to_telegram())
         return response
     except Exception as e:
         return {"error": str(e)}, 500

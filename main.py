@@ -1,11 +1,10 @@
-
 import openai
 import os
 import sys
 import asyncio
 from newsapi.newsapi_client import NewsApiClient
 import datetime
-from telegram.ext import Application
+from telegram.ext import Application, ContextTypes, Update
 
 # API key checks
 openai.api_key = os.environ.get('OPENAI_API_KEY')
@@ -30,14 +29,14 @@ def get_recent_news():
         'heise.de', 'golem.de', 't3n.de', 'spiegel.de', 'focus.de',
         'tagesschau.de', 'stern.de', 'wiwo.de', 'manager-magazin.de'
     ]
-    
+
     all_articles = []
     seven_days_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime('%Y-%m-%d')
-    
+
     for source in sources:
         if len(all_articles) >= 3:
             break
-            
+
         articles = newsapi.get_everything(
             q=f'("Künstliche Intelligenz") AND NOT "ChatGPT"',
             language='de',
@@ -46,10 +45,10 @@ def get_recent_news():
             domains=source,
             from_param=seven_days_ago
         )
-        
+
         if articles['articles'] and not any(a['url'].split('/')[2] == articles['articles'][0]['url'].split('/')[2] for a in all_articles):
             all_articles.append(articles['articles'][0])
-            
+
     return all_articles[:3]
 
 def create_linkedin_posts(articles):
@@ -96,7 +95,7 @@ async def send_to_telegram(posts):
     try:
         bot = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
         await bot.initialize()
-        
+
         for post in posts['posts']:
             message = f"""
 📰 *AI News Update*
@@ -115,7 +114,7 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
                 parse_mode='Markdown'
             )
         await bot.shutdown()
-            
+
     except Exception as e:
         print(f"Error sending to Telegram: {str(e)}")
         sys.exit(1)
@@ -130,5 +129,22 @@ async def main():
         print(f"Error: {str(e)}")
         sys.exit(1)
 
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message_type = update.message.chat.type
+    text = update.message.text.strip()
+
+    if message_type == 'group' and '@AINewsBot' not in text:
+        return
+
+    if text in ['1', '2', '3']:
+        post_num = int(text)
+        await update.message.reply_text(f'You selected Post {post_num}. Processing...')
+        # Here you can add your next step processing for the selected post
+    else:
+        await update.message.reply_text('Please select a post number (1, 2, or 3)')
+
+
 if __name__ == '__main__':
-    asyncio.run(main())
+    application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+    application.add_handler(Application.message_handler(handle_message))
+    application.run_polling()

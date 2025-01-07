@@ -39,7 +39,7 @@ def get_recent_news():
             break
             
         articles = newsapi.get_everything(
-            q=f'("Künstliche Intelligenz") AND NOT "ChatGPT"',
+            q=f'("Künstliche Intelligenz") AND NOT "ChatGPT" AND NOT "KI-Newsletter"',
             language='de',
             sort_by='publishedAt',
             page_size=1,

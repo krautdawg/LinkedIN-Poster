@@ -59,7 +59,7 @@ def create_linkedin_posts(articles):
         response = openai.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "You are a LinkedIn content expert specializing in AI trends. Create an engaging German post about this article. Include relevant hashtags."},
+                {"role": "system", "content": "You are a LinkedIn content expert specializing in AI trends. Create an engaging German post using the informal Du about this article. Include relevant hashtags."},
                 {"role": "user", "content": content}
             ],
             temperature=0.7

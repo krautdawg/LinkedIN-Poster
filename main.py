@@ -23,43 +23,39 @@ if not openai.api_key or not os.environ.get('NEWS_API_KEY'):
 
 
 def get_recent_news():
-    # Define diverse German news sources
-    sources = [
-        'faz.net', 'sueddeutsche.de', 'zeit.de', 'welt.de', 'handelsblatt.com',
-        'heise.de', 'golem.de', 't3n.de', 'spiegel.de', 'focus.de',
-        'tagesschau.de', 'stern.de', 'wiwo.de', 'manager-magazin.de'
-    ]
-    
+    # Define main tech news sources
+    sources = ['heise.de', 't3n.de', 'golem.de']
     all_articles = []
     seven_days_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime('%Y-%m-%d')
     
-    # Diverse AI-related topics
-    topics = [
-        'KI Gesundheit', 'KI Wirtschaft', 'KI Bildung',
-        'KI Forschung', 'KI Ethik', 'KI Robotik',
-        'KI Automation', 'KI Gesellschaft', 'KI Zukunft'
-    ]
-    
-    # Get articles from different sources with varied topics
+    # Get one article from each source
     for source in sources:
-        for topic in topics:
-            if len(all_articles) >= 3:
-                break
-                
-            articles = newsapi.get_everything(
-                q=f'("{topic}" OR "Künstliche Intelligenz") AND NOT "ChatGPT"',
-                language='de',
-                sort_by='publishedAt',
-                page_size=1,
-                domains=source,
-                from_param=seven_days_ago
-            )
+        articles = newsapi.get_everything(
+            q='Künstliche Intelligenz OR Artificial Intelligence',
+            language='de',
+            sort_by='publishedAt',
+            page_size=1,
+            domains=source,
+            from_param=seven_days_ago
+        )
+        if articles['articles']:
+            all_articles.append(articles['articles'][0])
             
-            if articles['articles'] and not any(a['url'].split('/')[2] == articles['articles'][0]['url'].split('/')[2] for a in all_articles):
-                all_articles.append(articles['articles'][0])
-                
-        if len(all_articles) >= 3:
-            break
+    # If we don't get enough articles, try backup sources
+    backup_sources = ['zeit.de', 'faz.net', 'sueddeutsche.de']
+    i = 0
+    while len(all_articles) < 3 and i < len(backup_sources):
+        articles = newsapi.get_everything(
+            q='Künstliche Intelligenz OR Artificial Intelligence',
+            language='de',
+            sort_by='publishedAt',
+            page_size=1,
+            domains=backup_sources[i],
+            from_param=seven_days_ago
+        )
+        if articles['articles']:
+            all_articles.append(articles['articles'][0])
+        i += 1
             
     return all_articles[:3]
 

@@ -19,12 +19,9 @@ if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
     """)
     exit(1)
 
-async def send_posts(app) -> None:
+async def send_posts(app, posts_response) -> None:
     try:
-        articles = get_recent_news()
-        posts = create_linkedin_posts(articles)
-        
-        for post in posts['posts']:
+        for post in posts_response['posts']:
             message = f"""
 📰 *AI News Update*
 

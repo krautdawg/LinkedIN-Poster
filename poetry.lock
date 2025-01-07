@@ -819,6 +819,16 @@ files = [
 ]
 
 [[package]]
+name = "telegram"
+version = "0.0.1"
+description = "Telegram APIs"
+optional = false
+python-versions = "*"
+files = [
+    {file = "telegram-0.0.1.tar.gz", hash = "sha256:d405a0af4c868a8dbeae6d03e297e21c7ee6269e11e2ed3810e15544aba02591"},
+]
+
+[[package]]
 name = "toml"
 version = "0.10.2"
 description = "Python Library for Tom's Obvious, Minimal Language"
@@ -993,4 +1003,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11.0,<3.12"
-content-hash = "5698982b2029e6630155b906889ecee08839ee03701e31d286dd6ca18e29e012"
+content-hash = "1d0116958c3f57153232c6cae5b7d6f17cb016638e14c009c8fb78c15d1d1f8a"

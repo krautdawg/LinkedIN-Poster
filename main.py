@@ -20,29 +20,7 @@ if not openai.api_key or not os.environ.get('NEWS_API_KEY'):
     """)
     exit(1)
 
-HTML_TEMPLATE = '''
-<!DOCTYPE html>
-<html>
-<head>
-    <title>German AI News</title>
-    <style>
-        body { max-width: 800px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif; }
-        .news-box { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
-        .response { margin-top: 20px; padding: 10px; background: #f5f5f5; border-radius: 5px; white-space: pre-line; }
-    </style>
-</head>
-<body>
-    <h1>Latest German AI News</h1>
-    <div class="news-box">
-        {% if response %}
-        <div class="response">
-            {{ response }}
-        </div>
-        {% endif %}
-    </div>
-</body>
-</html>
-'''
+
 
 def get_recent_news():
     articles = newsapi.get_everything(
@@ -54,30 +32,56 @@ def get_recent_news():
     )
     return articles['articles']
 
-def summarize_with_gpt(articles):
-    summaries = []
+def create_linkedin_posts(articles):
+    posts = []
     for article in articles:
-        content = f"Title: {article['title']}\nContent: {article['description']}\nURL: {article['url']}"
+        content = f"Article: {article['title']}\nURL: {article['url']}\nDescription: {article['description']}"
         response = openai.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "Summarize this article in German, maintaining the format: Überschrift, Zusammenfassung, Quelle, Datum, URL"},
+                {"role": "system", "content": "You are a LinkedIn content expert specializing in AI trends. Create an engaging German post about this article. Include relevant hashtags."},
                 {"role": "user", "content": content}
             ],
             temperature=0.7
         )
-        summaries.append(response.choices[0].message.content)
-    return "\n---\n".join(summaries)
+        
+        # Get sentiment analysis
+        sentiment_response = openai.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "Analyze the sentiment of this article. Return only two numbers: rating (1-5, where 5 is most positive) and confidence (0-1)."},
+                {"role": "user", "content": content}
+            ],
+            temperature=0.3
+        )
+        
+        # Parse sentiment numbers
+        sentiment_text = sentiment_response.choices[0].message.content
+        try:
+            rating, confidence = map(float, sentiment_text.split())
+            rating = max(1, min(5, rating))  # Ensure rating is between 1-5
+            confidence = max(0, min(1, confidence))  # Ensure confidence is between 0-1
+        except:
+            rating, confidence = 3, 0.5  # Default values if parsing fails
+        
+        posts.append({
+            "content": response.choices[0].message.content,
+            "sourceUrl": article['url'],
+            "sentiment": {
+                "rating": rating,
+                "confidence": confidence
+            }
+        })
+    return {"posts": posts}
 
-@app.route('/', methods=['GET', 'POST'])
-def chat():
+@app.route('/', methods=['GET'])
+def get_posts():
     try:
         articles = get_recent_news()
-        response = summarize_with_gpt(articles)
+        response = create_linkedin_posts(articles)
+        return response
     except Exception as e:
-        response = f"Error: {str(e)}"
-    
-    return render_template_string(HTML_TEMPLATE, response=response)
+        return {"error": str(e)}, 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000)

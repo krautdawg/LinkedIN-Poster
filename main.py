@@ -23,15 +23,41 @@ if not openai.api_key or not os.environ.get('NEWS_API_KEY'):
 
 
 def get_recent_news():
-    articles = newsapi.get_everything(
-        q='Künstliche Intelligenz OR Artificial Intelligence',
-        language='de',
-        sort_by='publishedAt',
-        page_size=3,
-        domains='heise.de,golem.de,t3n.de,zeit.de,faz.net,sueddeutsche.de',
-        from_param=(datetime.datetime.now() - datetime.timedelta(days=7)).strftime('%Y-%m-%d')
-    )
-    return articles['articles']
+    # Define main tech news sources
+    sources = ['heise.de', 't3n.de', 'golem.de']
+    all_articles = []
+    seven_days_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime('%Y-%m-%d')
+    
+    # Get one article from each source
+    for source in sources:
+        articles = newsapi.get_everything(
+            q='Künstliche Intelligenz OR Artificial Intelligence',
+            language='de',
+            sort_by='publishedAt',
+            page_size=1,
+            domains=source,
+            from_param=seven_days_ago
+        )
+        if articles['articles']:
+            all_articles.append(articles['articles'][0])
+            
+    # If we don't get enough articles, try backup sources
+    backup_sources = ['zeit.de', 'faz.net', 'sueddeutsche.de']
+    i = 0
+    while len(all_articles) < 3 and i < len(backup_sources):
+        articles = newsapi.get_everything(
+            q='Künstliche Intelligenz OR Artificial Intelligence',
+            language='de',
+            sort_by='publishedAt',
+            page_size=1,
+            domains=backup_sources[i],
+            from_param=seven_days_ago
+        )
+        if articles['articles']:
+            all_articles.append(articles['articles'][0])
+        i += 1
+            
+    return all_articles[:3]
 
 def create_linkedin_posts(articles):
     posts = []

@@ -35,24 +35,20 @@ def get_recent_news():
     
     # Get articles from different sources with varied topics
     for source in sources:
-    
-            if len(all_articles) >= 3:
-                break
-                
-            articles = newsapi.get_everything(
-                q=f'("Künstliche Intelligenz") AND NOT "ChatGPT"',
-                language='de',
-                sort_by='publishedAt',
-                page_size=1,
-                domains=source,
-                from_param=seven_days_ago
-            )
-            
-            if articles['articles'] and not any(a['url'].split('/')[2] == articles['articles'][0]['url'].split('/')[2] for a in all_articles):
-                all_articles.append(articles['articles'][0])
-                
         if len(all_articles) >= 3:
             break
+            
+        articles = newsapi.get_everything(
+            q=f'("Künstliche Intelligenz") AND NOT "ChatGPT"',
+            language='de',
+            sort_by='publishedAt',
+            page_size=1,
+            domains=source,
+            from_param=seven_days_ago
+        )
+        
+        if articles['articles'] and not any(a['url'].split('/')[2] == articles['articles'][0]['url'].split('/')[2] for a in all_articles):
+            all_articles.append(articles['articles'][0])
             
     return all_articles[:3]
 

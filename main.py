@@ -61,11 +61,12 @@ def chat():
         Zusammenfassung: [2-3 sentence summary]
         Quelle: [German news source]
         Datum: [recent date]
+        URl: [URL]
         
         Separate stories with '---'"""
         
         chat_response = openai.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": "Generate 3 current German AI news stories"}

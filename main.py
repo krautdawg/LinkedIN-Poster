@@ -59,31 +59,36 @@ HTML_TEMPLATE = '''
 def chat():
     response = None
     if request.method == 'POST':
-        user_prompt = request.form.get('prompt', '').strip()
-        
-        system_prompt = """You are an AI news curator specializing in German tech news.
-        Find 3 significant AI-related news stories from German news outlets from the past 7 days.
-        Format each story in German with:
-        1. Headline
-        2. Short summary (2-3 sentences)
-        3. Source and date
-        4. URL (use plausible URLs from real German tech news sites)
-        
-        Separate stories with '---'"""
-        
-        if user_prompt:
-            user_message = f"Find 3 German news stories about AI focusing on: {user_prompt}"
-        else:
-            user_message = "Find 3 interesting German news stories about AI from the past week"
+        try:
+            user_prompt = request.form.get('prompt', '').strip()
             
-        chat_response = openai.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_message}
-            ]
-        )
-        response = chat_response.choices[0].message.content
+            system_prompt = """You are an AI news curator specializing in German tech news.
+            Find 3 significant AI-related news stories from German news outlets from the past 7 days.
+            Format each story in German with:
+            1. Headline
+            2. Short summary (2-3 sentences)
+            3. Source and date
+            4. URL (use plausible URLs from real German tech news sites)
+            
+            Separate stories with '---'"""
+            
+            if user_prompt:
+                user_message = f"Find 3 German news stories about AI focusing on: {user_prompt}"
+            else:
+                user_message = "Find 3 interesting German news stories about AI from the past week"
+                
+            chat_response = openai.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_message}
+                ],
+                temperature=0.7,
+                max_tokens=1000
+            )
+            response = chat_response.choices[0].message.content
+        except Exception as e:
+            response = f"Error: {str(e)}"
     
     return render_template_string(HTML_TEMPLATE, response=response)
 

@@ -1,29 +1,30 @@
+
 import openai
 import os
 import sys
-from flask import Flask, request, render_template_string
+import asyncio
 from newsapi.newsapi_client import NewsApiClient
 import datetime
-
-app = Flask(__name__)
+from telegram.ext import Application
 
 # API key checks
 openai.api_key = os.environ.get('OPENAI_API_KEY')
 newsapi = NewsApiClient(api_key=os.environ.get('NEWS_API_KEY'))
+TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
+TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
 
-if not openai.api_key or not os.environ.get('NEWS_API_KEY'):
+if not all([openai.api_key, os.environ.get('NEWS_API_KEY'), TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID]):
     sys.stderr.write("""
-    Missing API keys. Please set:
+    Missing required keys. Please set:
     - OPENAI_API_KEY
     - NEWS_API_KEY
+    - TELEGRAM_BOT_TOKEN
+    - TELEGRAM_CHAT_ID
     in the Secrets Tool.
     """)
     exit(1)
 
-
-
 def get_recent_news():
-    # Define diverse German news sources
     sources = [
         'faz.net', 'sueddeutsche.de', 'zeit.de', 'welt.de', 'handelsblatt.com',
         'heise.de', 'golem.de', 't3n.de', 'spiegel.de', 'focus.de',
@@ -33,7 +34,6 @@ def get_recent_news():
     all_articles = []
     seven_days_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime('%Y-%m-%d')
     
-    # Get articles from different sources with varied topics
     for source in sources:
         if len(all_articles) >= 3:
             break
@@ -65,7 +65,6 @@ def create_linkedin_posts(articles):
             temperature=0.7
         )
 
-        # Get sentiment analysis
         sentiment_response = openai.chat.completions.create(
             model="gpt-4",
             messages=[
@@ -75,14 +74,13 @@ def create_linkedin_posts(articles):
             temperature=0.3
         )
 
-        # Parse sentiment numbers
         sentiment_text = sentiment_response.choices[0].message.content
         try:
             rating, confidence = map(float, sentiment_text.split())
-            rating = max(1, min(5, rating))  # Ensure rating is between 1-5
-            confidence = max(0, min(1, confidence))  # Ensure confidence is between 0-1
+            rating = max(1, min(5, rating))
+            confidence = max(0, min(1, confidence))
         except:
-            rating, confidence = 3, 0.5  # Default values if parsing fails
+            rating, confidence = 3, 0.5
 
         posts.append({
             "content": response.choices[0].message.content,
@@ -94,14 +92,41 @@ def create_linkedin_posts(articles):
         })
     return {"posts": posts}
 
-@app.route('/', methods=['GET'])
-def get_posts():
+async def send_to_telegram(posts):
+    try:
+        app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+        
+        for post in posts['posts']:
+            message = f"""
+📰 *AI News Update*
+
+{post['content']}
+
+📊 Sentiment Analysis:
+Rating: {'⭐' * int(post['sentiment']['rating'])} ({post['sentiment']['rating']}/5)
+Confidence: {post['sentiment']['confidence']*100:.1f}%
+
+🔗 Source: {post['sourceUrl']}
+"""
+            await app.bot.send_message(
+                chat_id=TELEGRAM_CHAT_ID,
+                text=message,
+                parse_mode='Markdown'
+            )
+            
+    except Exception as e:
+        print(f"Error sending to Telegram: {str(e)}")
+        sys.exit(1)
+
+async def main():
     try:
         articles = get_recent_news()
-        response = create_linkedin_posts(articles)
-        return response
+        posts = create_linkedin_posts(articles)
+        await send_to_telegram(posts)
+        print("Successfully sent posts to Telegram")
     except Exception as e:
-        return {"error": str(e)}, 500
+        print(f"Error: {str(e)}")
+        sys.exit(1)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3000)
+    asyncio.run(main())

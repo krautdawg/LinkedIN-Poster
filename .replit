@@ -1,3 +1,4 @@
+
 entrypoint = "main.py"
 modules = ["python-3.11:v14-20231207-2f65342"]
 
@@ -6,13 +7,6 @@ hidden = [".pythonlibs"]
 [nix]
 channel = "stable-23_05"
 
-[unitTest]
-language = "python3"
-
 [deployment]
 run = ["python3", "main.py"]
 deploymentTarget = "cloudrun"
-
-[[ports]]
-localPort = 3000
-externalPort = 80

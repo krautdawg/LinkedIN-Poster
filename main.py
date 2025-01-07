@@ -28,21 +28,19 @@ HTML_TEMPLATE = '''
 <!DOCTYPE html>
 <html>
 <head>
-    <title>GPT Chat Interface</title>
+    <title>German AI News</title>
     <style>
         body { max-width: 800px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif; }
-        .chat-box { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
-        textarea { width: 100%; height: 100px; margin: 10px 0; }
+        .news-box { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
         button { background: #0066cc; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
-        .response { margin-top: 20px; padding: 10px; background: #f5f5f5; border-radius: 5px; }
+        .response { margin-top: 20px; padding: 10px; background: #f5f5f5; border-radius: 5px; white-space: pre-line; }
     </style>
 </head>
 <body>
-    <h1>GPT Chat Interface</h1>
-    <div class="chat-box">
+    <h1>Latest German AI News</h1>
+    <div class="news-box">
         <form method="POST">
-            <textarea name="prompt" placeholder="Enter your prompt here..."></textarea><br>
-            <button type="submit">Send</button>
+            <button type="submit">Get Latest AI News</button>
         </form>
         {% if response %}
         <div class="response">
@@ -59,16 +57,29 @@ HTML_TEMPLATE = '''
 def chat():
     response = None
     if request.method == 'POST':
-        user_prompt = request.form.get('prompt')
-        if user_prompt:
+        try:
+            system_prompt = """You are a German AI news curator. Generate 3 fictional but realistic news stories about AI developments from German news sources. Format in German with:
+            
+            For each story:
+            Überschrift: [headline]
+            Zusammenfassung: [2-3 sentence summary]
+            Quelle: [German news source]
+            Datum: [recent date]
+            
+            Separate stories with '---'"""
+            
             chat_response = openai.chat.completions.create(
                 model="gpt-4",
                 messages=[
-                    {"role": "system", "content": "You are a helpful assistant."},
-                    {"role": "user", "content": user_prompt}
-                ]
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": "Generate 3 current German AI news stories"}
+                ],
+                temperature=0.7,
+                max_tokens=1000
             )
             response = chat_response.choices[0].message.content
+        except Exception as e:
+            response = f"Error: {str(e)}"
     
     return render_template_string(HTML_TEMPLATE, response=response)
 

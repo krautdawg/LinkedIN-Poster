@@ -21,8 +21,11 @@ if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
 
 async def send_posts(app) -> None:
     try:
+        print(f"Starting to send posts to chat ID: {TELEGRAM_CHAT_ID}")
         articles = get_recent_news()
+        print(f"Retrieved {len(articles)} articles")
         posts = create_linkedin_posts(articles)
+        print(f"Created {len(posts['posts'])} LinkedIn posts")
         
         for post in posts['posts']:
             message = f"""

@@ -39,9 +39,6 @@ HTML_TEMPLATE = '''
 <body>
     <h1>Latest German AI News</h1>
     <div class="news-box">
-        <form method="POST">
-            <button type="submit">Get Latest AI News</button>
-        </form>
         {% if response %}
         <div class="response">
             <strong>Response:</strong><br>
@@ -56,8 +53,7 @@ HTML_TEMPLATE = '''
 @app.route('/', methods=['GET', 'POST'])
 def chat():
     response = None
-    if request.method == 'POST':
-        try:
+    try:
             system_prompt = """You are a German AI news curator. Look up 3 headline news stories about Artifical Intelligence from the past 7 days from German news sources. Format in German with:
             
             For each story:

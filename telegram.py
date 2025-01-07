@@ -1,8 +1,10 @@
+
 import os
 import sys
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 import asyncio
+from main import get_recent_news, create_linkedin_posts
 
 # Check for Telegram Bot Token and Chat ID
 TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
@@ -17,9 +19,11 @@ if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
     """)
     exit(1)
 
-async def send_posts(app, posts) -> None:
+async def send_posts(app) -> None:
     try:
-        print(f"Starting to send posts to chat ID: {TELEGRAM_CHAT_ID}")
+        articles = get_recent_news()
+        posts = create_linkedin_posts(articles)
+        
         for post in posts['posts']:
             message = f"""
 📰 *AI News Update*
@@ -37,7 +41,7 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
                 text=message,
                 parse_mode='Markdown'
             )
-
+            
     except Exception as e:
         await app.bot.send_message(
             chat_id=TELEGRAM_CHAT_ID,
@@ -48,10 +52,7 @@ async def main() -> None:
     app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
     
     # Send posts immediately when bot starts
-    #This line needs to be adjusted to accept posts as a parameter.
-    #Assuming get_recent_news and create_linkedin_posts are now handled elsewhere
-    #and posts is provided as argument
-    # await send_posts(app) 
+    await send_posts(app)
     
     # Exit after sending posts
     sys.exit(0)

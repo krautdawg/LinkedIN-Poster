@@ -103,21 +103,5 @@ def get_posts():
     except Exception as e:
         return {"error": str(e)}, 500
 
-async def send_telegram_updates():
-    from telegram.ext import Application
-    from telegram import send_posts
-    app = Application.builder().token(os.environ.get('TELEGRAM_BOT_TOKEN')).build()
-    await send_posts(app)
-
-@app.route('/send-updates', methods=['GET'])
-def trigger_updates():
-    try:
-        articles = get_recent_news()
-        response = create_linkedin_posts(articles)
-        asyncio.run(send_telegram_updates())
-        return response
-    except Exception as e:
-        return {"error": str(e)}, 500
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000)

@@ -94,7 +94,8 @@ def create_linkedin_posts(articles):
 
 async def send_to_telegram(posts):
     try:
-        app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+        bot = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+        await bot.initialize()
         
         for post in posts['posts']:
             message = f"""
@@ -108,11 +109,12 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
 
 🔗 Source: {post['sourceUrl']}
 """
-            await app.bot.send_message(
+            await bot.bot.send_message(
                 chat_id=TELEGRAM_CHAT_ID,
                 text=message,
                 parse_mode='Markdown'
             )
+        await bot.shutdown()
             
     except Exception as e:
         print(f"Error sending to Telegram: {str(e)}")

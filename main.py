@@ -58,7 +58,7 @@ def chat():
     response = None
     if request.method == 'POST':
         try:
-            system_prompt = """You are a German AI news curator. Generate 3 fictional but realistic news stories about AI developments from German news sources. Format in German with:
+            system_prompt = """You are a German AI news curator. Look up 3 headline news stories about Artifical Intelligence from the past 7 days from German news sources. Format in German with:
             
             For each story:
             Überschrift: [headline]

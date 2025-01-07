@@ -33,21 +33,14 @@ def get_recent_news():
     all_articles = []
     seven_days_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime('%Y-%m-%d')
     
-    # Diverse AI-related topics
-    topics = [
-        'KI Gesundheit', 'KI Wirtschaft', 'KI Bildung',
-        'KI Forschung', 'KI Ethik', 'KI Robotik',
-        'KI Automation', 'KI Gesellschaft', 'KI Zukunft'
-    ]
-    
     # Get articles from different sources with varied topics
     for source in sources:
-        for topic in topics:
+    
             if len(all_articles) >= 3:
                 break
                 
             articles = newsapi.get_everything(
-                q=f'("{topic}" OR "Künstliche Intelligenz") AND NOT "ChatGPT"',
+                q=f'("Künstliche Intelligenz") AND NOT "ChatGPT"',
                 language='de',
                 sort_by='publishedAt',
                 page_size=1,

@@ -5,7 +5,8 @@ import sys
 import asyncio
 from newsapi.newsapi_client import NewsApiClient
 import datetime
-from telegram.ext import Application
+from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
+from telegram import Update
 
 # API key checks
 openai.api_key = os.environ.get('OPENAI_API_KEY')
@@ -120,12 +121,59 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
         print(f"Error sending to Telegram: {str(e)}")
         sys.exit(1)
 
-async def main():
+async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text('Hello! I am your AI News Bot. Use /news to get the latest AI news.')
+
+async def news_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         articles = get_recent_news()
         posts = create_linkedin_posts(articles)
         await send_to_telegram(posts)
-        print("Successfully sent posts to Telegram")
+        await update.message.reply_text('News has been fetched and posted!')
+    except Exception as e:
+        await update.message.reply_text(f'Error fetching news: {str(e)}')
+
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    help_text = """
+Available commands:
+/start - Start the bot
+/help - Show this help message
+/news - Get latest AI news
+    """
+    await update.message.reply_text(help_text)
+
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message_type = update.message.chat.type
+    text = update.message.text
+    
+    if message_type == 'group':
+        if '@AINewsBot' not in text:
+            return
+        
+    await update.message.reply_text('Use /help to see available commands')
+
+async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    print(f'Update {update} caused error {context.error}')
+
+async def main():
+    try:
+        app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+        
+        # Commands
+        app.add_handler(CommandHandler('start', start_command))
+        app.add_handler(CommandHandler('help', help_command))
+        app.add_handler(CommandHandler('news', news_command))
+        
+        # Messages
+        app.add_handler(MessageHandler(filters.TEXT, handle_message))
+        
+        # Errors
+        app.add_error_handler(error)
+        
+        # Start bot
+        print('Starting bot...')
+        await app.run_polling(poll_interval=3)
+        
     except Exception as e:
         print(f"Error: {str(e)}")
         sys.exit(1)

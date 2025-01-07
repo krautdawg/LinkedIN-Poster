@@ -1,9 +1,9 @@
-
 import openai
 import os
 import sys
 from flask import Flask, request, render_template_string
 from newsapi.newsapi_client import NewsApiClient
+import datetime
 
 app = Flask(__name__)
 
@@ -28,7 +28,8 @@ def get_recent_news():
         language='de',
         sort_by='publishedAt',
         page_size=3,
-        domains='heise.de,golem.de,t3n.de,zeit.de,faz.net,sueddeutsche.de'
+        domains='heise.de,golem.de,t3n.de,zeit.de,faz.net,sueddeutsche.de',
+        from_param=(datetime.datetime.now() - datetime.timedelta(days=7)).strftime('%Y-%m-%d')
     )
     return articles['articles']
 
@@ -44,7 +45,7 @@ def create_linkedin_posts(articles):
             ],
             temperature=0.7
         )
-        
+
         # Get sentiment analysis
         sentiment_response = openai.chat.completions.create(
             model="gpt-4",
@@ -54,7 +55,7 @@ def create_linkedin_posts(articles):
             ],
             temperature=0.3
         )
-        
+
         # Parse sentiment numbers
         sentiment_text = sentiment_response.choices[0].message.content
         try:
@@ -63,7 +64,7 @@ def create_linkedin_posts(articles):
             confidence = max(0, min(1, confidence))  # Ensure confidence is between 0-1
         except:
             rating, confidence = 3, 0.5  # Default values if parsing fails
-        
+
         posts.append({
             "content": response.choices[0].message.content,
             "sourceUrl": article['url'],

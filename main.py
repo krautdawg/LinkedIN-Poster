@@ -3,7 +3,7 @@ import openai
 import os
 import sys
 from flask import Flask, request, render_template_string
-from newsapi import NewsApiClient
+from newsapi.newsapi_client import NewsApiClient
 
 app = Flask(__name__)
 

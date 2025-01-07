@@ -54,28 +54,28 @@ HTML_TEMPLATE = '''
 def chat():
     response = None
     try:
-            system_prompt = """You are a German AI news curator. Look up 3 headline news stories about Artifical Intelligence from the past 7 days from German news sources. Format in German with:
-            
-            For each story:
-            Überschrift: [headline]
-            Zusammenfassung: [2-3 sentence summary]
-            Quelle: [German news source]
-            Datum: [recent date]
-            
-            Separate stories with '---'"""
-            
-            chat_response = openai.chat.completions.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": "Generate 3 current German AI news stories"}
-                ],
-                temperature=0.7,
-                max_tokens=1000
-            )
-            response = chat_response.choices[0].message.content
-        except Exception as e:
-            response = f"Error: {str(e)}"
+        system_prompt = """You are a German AI news curator. Look up 3 headline news stories about Artifical Intelligence from the past 7 days from German news sources. Format in German with:
+        
+        For each story:
+        Überschrift: [headline]
+        Zusammenfassung: [2-3 sentence summary]
+        Quelle: [German news source]
+        Datum: [recent date]
+        
+        Separate stories with '---'"""
+        
+        chat_response = openai.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": "Generate 3 current German AI news stories"}
+            ],
+            temperature=0.7,
+            max_tokens=1000
+        )
+        response = chat_response.choices[0].message.content
+    except Exception as e:
+        response = f"Error: {str(e)}"
     
     return render_template_string(HTML_TEMPLATE, response=response)
 

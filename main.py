@@ -140,6 +140,27 @@ async def main():
 
 stored_posts = None
 
+async def post_to_linkedin(post_content):
+    from linkedin_api import Linkedin
+
+    # Get LinkedIn credentials from environment
+    linkedin_username = os.environ.get('LINKEDIN_USERNAME')
+    linkedin_password = os.environ.get('LINKEDIN_PASSWORD')
+
+    if not linkedin_username or not linkedin_password:
+        raise Exception("LinkedIn credentials not found in environment variables")
+
+    # Initialize LinkedIn client
+    api = Linkedin(linkedin_username, linkedin_password)
+    
+    try:
+        # Post to LinkedIn
+        api.post(post_content)
+        return True
+    except Exception as e:
+        print(f"Error posting to LinkedIn: {str(e)}")
+        return False
+
 async def handle_selection(update, context):
     global stored_posts
     if not stored_posts:
@@ -158,6 +179,13 @@ async def handle_selection(update, context):
             # Store selection for future processing
             with open('selected_post.json', 'w', encoding='utf-8') as f:
                 json.dump(selected_post, f, ensure_ascii=False, indent=2)
+            
+            # Post to LinkedIn
+            success = await post_to_linkedin(selected_post['content'])
+            if success:
+                await update.message.reply_text("Successfully posted to LinkedIn!")
+            else:
+                await update.message.reply_text("Failed to post to LinkedIn. Please check the logs.")
         else:
             await update.message.reply_text("Please select a number between 1 and 3.")
     except (ValueError, IndexError):

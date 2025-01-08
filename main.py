@@ -144,21 +144,38 @@ async def main():
 stored_posts = None
 
 async def post_to_linkedin(post_content):
-    from linkedin_api import Linkedin
-
-    # Get LinkedIn credentials from environment
-    linkedin_username = os.environ.get('LINKEDIN_USERNAME')
-    linkedin_password = os.environ.get('LINKEDIN_PASSWORD')
-
-    if not linkedin_username or not linkedin_password:
-        raise Exception("LinkedIn credentials not found in environment variables")
-
-    # Initialize LinkedIn client
-    api = Linkedin(linkedin_username, linkedin_password)
+    access_token = os.environ.get('LINKEDIN_ACCESS_TOKEN')
+    
+    if not access_token:
+        raise Exception("LinkedIn access token not found in environment variables")
     
     try:
-        # Post to LinkedIn
-        api.post(post_content)
+        response = await asyncio.get_event_loop().run_in_executor(None, lambda: requests.post(
+            'https://api.linkedin.com/v2/ugcPosts',
+            headers={
+                'Authorization': f'Bearer {access_token}',
+                'Content-Type': 'application/json',
+            },
+            json={
+                'author': f'urn:li:person:{access_token.split(":")[1]}',
+                'lifecycleState': 'PUBLISHED',
+                'specificContent': {
+                    'com.linkedin.ugc.ShareContent': {
+                        'shareCommentary': {
+                            'text': post_content
+                        },
+                        'shareMediaCategory': 'NONE'
+                    }
+                },
+                'visibility': {
+                    'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC'
+                }
+            }
+        ))
+        
+        if not response.ok:
+            raise Exception(f"LinkedIn API error: {response.status_code}")
+            
         return True
     except Exception as e:
         print(f"Error posting to LinkedIn: {str(e)}")

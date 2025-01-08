@@ -158,7 +158,7 @@ async def post_to_linkedin(post_content):
                 'Content-Type': 'application/json',
             },
             json={
-                'author': f'urn:li:person:{access_token.split(":")[1]}',
+                'author': 'urn:li:person:me',
                 'lifecycleState': 'PUBLISHED',
                 'specificContent': {
                     'com.linkedin.ugc.ShareContent': {

@@ -153,11 +153,14 @@ async def post_to_linkedin(post_content):
     try:
         # First get member profile
         profile_response = await asyncio.get_event_loop().run_in_executor(None, lambda: requests.get(
-            'https://api.linkedin.com/v2/me',
+            'https://api.linkedin.com/v2/userinfo',
             headers={
                 'Authorization': f'Bearer {access_token}',
                 'X-Restli-Protocol-Version': '2.0.0',
-                'LinkedIn-Version': '202304'
+                'LinkedIn-Version': '202401',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Connection': 'Keep-Alive'
             }
         ))
         

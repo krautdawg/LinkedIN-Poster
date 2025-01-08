@@ -1,0 +1,28 @@
+{
+  "posts": [
+    {
+      "content": "Hey Leute! 😊 Habt ihr schon die neuesten Nachrichten von der digitalen Börsenfront gehört? Die Digitalunternehmen haben 2024 erneut die klassischen Börsen-Indizes geschlagen! 🚀 Angeführt vom Megatrend Künstliche Intelligenz, legte der Nasdaq 100 im letzten Jahr um satte 27 Prozent zu. 💹 Wenn ihr mehr darüber wissen wollt, schaut euch diesen Artikel an - er analysiert die besten Digitalwerte des Jahres. Beeindruckend, oder? 🤓 #AI #Digitalisierung #Börse #Nasdaq #Megatrend\nURL: https://www.faz.net/pro/digitalwirtschaft/transformation/die-digitalaktien-des-jahres-110205629.html",
+      "sourceUrl": "https://www.faz.net/pro/digitalwirtschaft/transformation/die-digitalaktien-des-jahres-110205629.html",
+      "sentiment": {
+        "rating": 3,
+        "confidence": 0.5
+      }
+    },
+    {
+      "content": "Hey Leute! 👋 Habt ihr jemals das Gefühl gehabt, dass ihr mit einer Maschine redet, wenn ihr einen Kundenservice anruft? 🤖 Nun, das ist wahrscheinlich, weil ihr es tatsächlich seid. Künstliche Intelligenz wird zunehmend eingesetzt, um Emotionen in Anrufen und E-Mails zu erkennen und so den Kundensupport zu verbessern. 📞💻 Aber wie genau funktioniert das? Und was bedeutet das für die Zukunft des Kundenservice? Schaut euch diesen spannenden Artikel an, um mehr zu erfahren! #KünstlicheIntelligenz #Kundenservice #ZukunftDerTechnologie 🚀👇\nhttps://www.sueddeutsche.de/wirtschaft/kuenstliche-intelligenz-kundensupport-voicebot-li.3175722",
+      "sourceUrl": "https://www.sueddeutsche.de/wirtschaft/kuenstliche-intelligenz-kundensupport-voicebot-li.3175722",
+      "sentiment": {
+        "rating": 3,
+        "confidence": 0.5
+      }
+    },
+    {
+      "content": "Hey Leute! Ein Blick auf diesen Artikel könnte Eure Meinung über Künstliche Intelligenz (KI) ändern. Viele Menschen haben Angst vor einer KI-Apokalypse, aber diese Sicht ignoriert eine wichtige Tatsache: Künstliche Intelligenz ist im Kern konservativ. Sie ist darauf programmiert, Muster zu erkennen und zu lernen, nicht die Welt zu zerstören. Schaut euch den Artikel an und teilt Eure Gedanken dazu! #KI #Innovation #Zukunftstechnologien\n\nLink: https://www.zeit.de/kultur/2024-12/kuenstliche-intelligenz-weltuntergang-apokalypse-experten-konservativ",
+      "sourceUrl": "https://www.zeit.de/kultur/2024-12/kuenstliche-intelligenz-weltuntergang-apokalypse-experten-konservativ",
+      "sentiment": {
+        "rating": 3,
+        "confidence": 0.5
+      }
+    }
+  ]
+}

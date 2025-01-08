@@ -151,22 +151,33 @@ async def post_to_linkedin(post_content):
         raise Exception("LinkedIn access token not found in environment variables")
     
     try:
+        # First get member profile
+        profile_response = await asyncio.get_event_loop().run_in_executor(None, lambda: requests.get(
+            'https://api.linkedin.com/v2/me',
+            headers={'Authorization': f'Bearer {access_token}'}
+        ))
+        
+        if not profile_response.ok:
+            raise Exception(f"Failed to get LinkedIn profile: {profile_response.status_code}")
+            
+        member_id = profile_response.json().get('id')
+        
         response = await asyncio.get_event_loop().run_in_executor(None, lambda: requests.post(
             'https://api.linkedin.com/v2/ugcPosts',
             headers={
                 'Authorization': f'Bearer {access_token}',
                 'Content-Type': 'application/json',
+                'X-Restli-Protocol-Version': '2.0.0'
             },
             json={
-                "author": "urn:li:person:me",
+                "author": f"urn:li:person:{member_id}",
                 "lifecycleState": "PUBLISHED",
                 "specificContent": {
                     "com.linkedin.ugc.ShareContent": {
                         "shareCommentary": {
                             "text": post_content
                         },
-                        "shareMediaCategory": "NONE",
-                        "media": []
+                        "shareMediaCategory": "NONE"
                     }
                 },
                 "visibility": {

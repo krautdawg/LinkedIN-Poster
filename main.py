@@ -3,6 +3,7 @@ import openai
 import os
 import sys
 import asyncio
+import json
 from newsapi.newsapi_client import NewsApiClient
 import datetime
 from telegram.ext import Application
@@ -120,10 +121,15 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
         print(f"Error sending to Telegram: {str(e)}")
         sys.exit(1)
 
+def store_posts(posts):
+    with open('stored_posts.json', 'w', encoding='utf-8') as f:
+        json.dump(posts, f, ensure_ascii=False, indent=2)
+
 async def main():
     try:
         articles = get_recent_news()
         posts = create_linkedin_posts(articles)
+        store_posts(posts)  # Store posts in JSON file
         await send_to_telegram(posts)
         print("Successfully sent posts to Telegram")
     except Exception as e:

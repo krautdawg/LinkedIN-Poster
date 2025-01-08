@@ -146,9 +146,12 @@ stored_posts = None
 
 async def post_to_linkedin(post_content):
     access_token = os.environ.get('LINKEDIN_ACCESS_TOKEN')
+    linkedin_member_id = os.environ.get('LINKEDIN_MEMBER_ID')
     
     if not access_token:
         raise Exception("LinkedIn access token not found in environment variables")
+    if not linkedin_member_id:
+        raise Exception("LinkedIn member ID not found in environment variables")
     
     try:
         response = await asyncio.get_event_loop().run_in_executor(None, lambda: requests.post(
@@ -159,7 +162,7 @@ async def post_to_linkedin(post_content):
                 'X-Restli-Protocol-Version': '2.0.0'
             },
             json={
-                "author": "urn:li:person:me",
+                "author": f"urn:li:person:{linkedin_member_id}",
                 "lifecycleState": "PUBLISHED",
                 "specificContent": {
                     "com.linkedin.ugc.ShareContent": {

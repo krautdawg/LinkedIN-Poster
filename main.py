@@ -6,7 +6,7 @@ import asyncio
 import json
 from newsapi.newsapi_client import NewsApiClient
 import datetime
-from telegram.ext import Application
+from telegram.ext import Application, CommandHandler, MessageHandler, filters
 
 # API key checks
 openai.api_key = os.environ.get('OPENAI_API_KEY')
@@ -98,6 +98,8 @@ def store_posts(posts):
         json.dump(posts, f, ensure_ascii=False, indent=2)
 
 async def send_to_telegram(posts):
+    global stored_posts
+    stored_posts = posts
     try:
         bot = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
         await bot.initialize()
@@ -136,5 +138,35 @@ async def main():
         print(f"Error: {str(e)}")
         sys.exit(1)
 
+stored_posts = None
+
+async def handle_selection(update, context):
+    global stored_posts
+    if not stored_posts:
+        await update.message.reply_text("No articles available. Please wait for the next update.")
+        return
+
+    try:
+        selection = int(update.message.text)
+        if 1 <= selection <= 3:
+            selected_post = stored_posts['posts'][selection - 1]
+            await update.message.reply_text(
+                f"Selected Article {selection}:\n\n"
+                f"{selected_post['content']}\n\n"
+                f"Source: {selected_post['sourceUrl']}"
+            )
+            # Store selection for future processing
+            with open('selected_post.json', 'w', encoding='utf-8') as f:
+                json.dump(selected_post, f, ensure_ascii=False, indent=2)
+        else:
+            await update.message.reply_text("Please select a number between 1 and 3.")
+    except (ValueError, IndexError):
+        await update.message.reply_text("Please send a number between 1 and 3 to select an article.")
+
 if __name__ == '__main__':
-    asyncio.run(main())
+    application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_selection))
+    
+    # Run the bot and the main function
+    asyncio.get_event_loop().create_task(main())
+    application.run_polling()

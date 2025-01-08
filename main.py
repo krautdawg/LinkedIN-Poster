@@ -3,6 +3,7 @@ import openai
 import os
 import sys
 import asyncio
+import json
 from newsapi.newsapi_client import NewsApiClient
 import datetime
 from telegram.ext import Application
@@ -92,14 +93,19 @@ def create_linkedin_posts(articles):
         })
     return {"posts": posts}
 
+def store_posts(posts):
+    with open('stored_posts.json', 'w', encoding='utf-8') as f:
+        json.dump(posts, f, ensure_ascii=False, indent=2)
+
 async def send_to_telegram(posts):
     try:
         bot = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
         await bot.initialize()
+        store_posts(posts)  # Store posts for future processing
         
-        for post in posts['posts']:
+        for i, post in enumerate(posts['posts'], 1):
             message = f"""
-📰 *AI News Update*
+📰 *AI News Update #{i}*
 
 {post['content']}
 

@@ -1,4 +1,3 @@
-
 import openai
 import os
 import sys
@@ -35,14 +34,14 @@ def get_recent_news():
         'heise.de', 'golem.de', 't3n.de', 'spiegel.de', 'focus.de',
         'tagesschau.de', 'stern.de', 'wiwo.de', 'manager-magazin.de'
     ]
-    
+
     all_articles = []
     seven_days_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime('%Y-%m-%d')
-    
+
     for source in sources:
         if len(all_articles) >= 3:
             break
-            
+
         articles = newsapi.get_everything(
             q=f'("Künstliche Intelligenz") AND NOT "ChatGPT" AND NOT "KI-Newsletter"',
             language='de',
@@ -51,10 +50,10 @@ def get_recent_news():
             domains=source,
             from_param=seven_days_ago
         )
-        
+
         if articles['articles'] and not any(a['url'].split('/')[2] == articles['articles'][0]['url'].split('/')[2] for a in all_articles):
             all_articles.append(articles['articles'][0])
-            
+
     return all_articles[:3]
 
 def create_linkedin_posts(articles):
@@ -108,7 +107,7 @@ async def send_to_telegram(posts):
         bot = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
         await bot.initialize()
         store_posts(posts)  # Store posts for future processing
-        
+
         for i, post in enumerate(posts['posts'], 1):
             message = f"""
 📰 *AI News Update #{i}*
@@ -127,7 +126,7 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
                 parse_mode='Markdown'
             )
         await bot.shutdown()
-            
+
     except Exception as e:
         print(f"Error sending to Telegram: {str(e)}")
         sys.exit(1)
@@ -147,12 +146,12 @@ stored_posts = None
 async def post_to_linkedin(post_content):
     access_token = os.environ.get('LINKEDIN_ACCESS_TOKEN')
     linkedin_member_id = os.environ.get('LINKEDIN_MEMBER_ID')
-    
+
     if not access_token:
         raise Exception("LinkedIn access token not found in environment variables")
     if not linkedin_member_id:
         raise Exception("LinkedIn member ID not found in environment variables")
-    
+
     try:
         response = await asyncio.get_event_loop().run_in_executor(None, lambda: requests.post(
             'https://api.linkedin.com/v2/ugcPosts',
@@ -177,11 +176,11 @@ async def post_to_linkedin(post_content):
                 }
             }
         ))
-        
+
         if not response.ok:
             error_detail = response.json() if response.content else "No error details available"
             raise Exception(f"LinkedIn API error {response.status_code}: {error_detail}")
-            
+
         return True
     except Exception as e:
         print(f"Error posting to LinkedIn: {str(e)}")
@@ -205,7 +204,7 @@ async def handle_selection(update, context):
             # Store selection for future processing
             with open('selected_post.json', 'w', encoding='utf-8') as f:
                 json.dump(selected_post, f, ensure_ascii=False, indent=2)
-            
+
             # Post to LinkedIn
             success = await post_to_linkedin(selected_post['content'])
             if success:
@@ -220,7 +219,7 @@ async def handle_selection(update, context):
 if __name__ == '__main__':
     application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_selection))
-    
+
     # Run the bot and the main function
     asyncio.get_event_loop().create_task(main())
     application.run_polling()

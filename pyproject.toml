@@ -12,6 +12,7 @@ newsapi = "^0.1.1"
 newsapi-python = "^0.2.7"
 python-telegram-bot = "^20.7"
 telegram = "^0.0.1"
+linkedin-api = "^2.3.1"
 
 [tool.poetry.dev-dependencies]
 debugpy = "^1.6.2"

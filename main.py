@@ -4,6 +4,9 @@ import os
 import sys
 import asyncio
 import json
+import logging
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("telegram").setLevel(logging.WARNING)
 from newsapi.newsapi_client import NewsApiClient
 import datetime
 from telegram.ext import Application, CommandHandler, MessageHandler, filters

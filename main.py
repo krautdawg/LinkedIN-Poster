@@ -5,7 +5,7 @@ import sys
 import asyncio
 from newsapi.newsapi_client import NewsApiClient
 import datetime
-from telegram.ext import Application, MessageHandler, filters
+from telegram.ext import Application
 
 # API key checks
 openai.api_key = os.environ.get('OPENAI_API_KEY')
@@ -97,9 +97,9 @@ async def send_to_telegram(posts):
         bot = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
         await bot.initialize()
         
-        for i, post in enumerate(posts['posts'], 1):
+        for post in posts['posts']:
             message = f"""
-📰 *AI News Update #{i}*
+📰 *AI News Update*
 
 {post['content']}
 
@@ -130,35 +130,5 @@ async def main():
         print(f"Error: {str(e)}")
         sys.exit(1)
 
-stored_posts = None
-
-async def handle_message(update, context):
-    global stored_posts
-    text = update.message.text
-    
-    if text in ['1', '2', '3']:
-        post_index = int(text) - 1
-        if stored_posts and post_index < len(stored_posts['posts']):
-            selected_post = stored_posts['posts'][post_index]
-            await update.message.reply_text(f"Selected post {text} for LinkedIn. Content:\n\n{selected_post['content']}")
-            # Here you would add your LinkedIn posting logic
-            await update.message.reply_text("✅ Post has been selected for LinkedIn!")
-        else:
-            await update.message.reply_text("No posts available for selection. Please wait for the next update.")
-
-async def main():
-    global stored_posts
-    try:
-        articles = get_recent_news()
-        posts = create_linkedin_posts(articles)
-        stored_posts = posts  # Store posts globally
-        await send_to_telegram(posts)
-        print("Successfully sent posts to Telegram")
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        sys.exit(1)
-
 if __name__ == '__main__':
-    application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-    application.run_polling()
+    asyncio.run(main())

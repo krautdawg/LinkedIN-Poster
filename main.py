@@ -152,7 +152,7 @@ async def post_to_linkedin(post_content):
     
     try:
         response = await asyncio.get_event_loop().run_in_executor(None, lambda: requests.post(
-            'https://api.linkedin.com/v2/shares',
+            'https://api.linkedin.com/v2/ugcPosts',
             headers={
                 'Authorization': f'Bearer {access_token}',
                 'Content-Type': 'application/json',
@@ -179,7 +179,8 @@ async def post_to_linkedin(post_content):
         ))
         
         if not response.ok:
-            raise Exception(f"LinkedIn API error: {response.status_code}")
+            error_detail = response.json() if response.content else "No error details available"
+            raise Exception(f"LinkedIn API error {response.status_code}: {error_detail}")
             
         return True
     except Exception as e:

@@ -41,7 +41,7 @@ def get_recent_news():
         articles = newsapi.get_everything(
             q=f'("Künstliche Intelligenz") AND NOT "ChatGPT" AND NOT "KI-Newsletter"',
             language='de',
-            sort_by='publishedAt',
+            sort_by='relevancy',
             page_size=1,
             domains=source,
             from_param=seven_days_ago

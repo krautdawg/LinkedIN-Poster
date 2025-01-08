@@ -160,21 +160,18 @@ async def post_to_linkedin(post_content):
             },
             json={
                 "author": "urn:li:person:me",
-                "commentary": post_content[:3000],
-                "visibility": "PUBLIC",
-                "distribution": {
-                    "feedDistribution": "MAIN_FEED",
-                    "targetEntities": [],
-                    "thirdPartyDistributionChannels": []
-                },
-                "content": {
-                    "article": {
-                        "source": "https://www.linkedin.com",
-                        "title": "AI News Update"
+                "lifecycleState": "PUBLISHED",
+                "specificContent": {
+                    "com.linkedin.ugc.ShareContent": {
+                        "shareCommentary": {
+                            "text": post_content[:3000]
+                        },
+                        "shareMediaCategory": "NONE"
                     }
                 },
-                "lifecycleState": "PUBLISHED",
-                "isReshareDisabledByAuthor": False
+                "visibility": {
+                    "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
+                }
             }
         ))
         

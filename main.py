@@ -162,7 +162,7 @@ async def post_to_linkedin(post_content):
                 'X-Restli-Protocol-Version': '2.0.0'
             },
             json={
-                "author": f"urn:li:person:{linkedin_member_id}",
+                "author": f"urn:li:member:{linkedin_member_id}",
                 "lifecycleState": "PUBLISHED",
                 "specificContent": {
                     "com.linkedin.ugc.ShareContent": {

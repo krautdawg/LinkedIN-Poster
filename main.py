@@ -159,22 +159,16 @@ async def post_to_linkedin(post_content):
                 'X-Restli-Protocol-Version': '2.0.0'
             },
             json={
-                "content": {
-                    "contentEntities": [{
-                        "entityLocation": "",
-                        "thumbnails": [{"resolvedUrl": ""}]
-                    }],
-                    "title": "Post"
-                },
+                "author": "urn:li:person:me",
+                "commentary": post_content,
+                "visibility": "PUBLIC",
                 "distribution": {
-                    "linkedInDistributionTarget": {
-                        "visibleToGuest": True
-                    }
+                    "feedDistribution": "MAIN_FEED",
+                    "targetEntities": [],
+                    "thirdPartyDistributionChannels": []
                 },
-                "owner": "urn:li:person:me",
-                "text": {
-                    "text": post_content
-                }
+                "lifecycleState": "PUBLISHED",
+                "isReshareDisabledByAuthor": False
             }
         ))
         

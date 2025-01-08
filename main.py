@@ -158,18 +158,19 @@ async def post_to_linkedin(post_content):
                 'Content-Type': 'application/json',
             },
             json={
-                'author': 'urn:li:person:me',
-                'lifecycleState': 'PUBLISHED',
-                'specificContent': {
-                    'com.linkedin.ugc.ShareContent': {
-                        'shareCommentary': {
-                            'text': post_content
+                "author": "urn:li:person:me",
+                "lifecycleState": "PUBLISHED",
+                "specificContent": {
+                    "com.linkedin.ugc.ShareContent": {
+                        "shareCommentary": {
+                            "text": post_content
                         },
-                        'shareMediaCategory': 'NONE'
+                        "shareMediaCategory": "NONE",
+                        "media": []
                     }
                 },
-                'visibility': {
-                    'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC'
+                "visibility": {
+                    "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
                 }
             }
         ))

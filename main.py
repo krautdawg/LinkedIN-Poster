@@ -154,26 +154,27 @@ async def post_to_linkedin(post_content):
 
     try:
         response = await asyncio.get_event_loop().run_in_executor(None, lambda: requests.post(
-            'https://api.linkedin.com/v2/ugcPosts',
+            'https://api.linkedin.com/rest/posts',
             headers={
                 'Authorization': f'Bearer {access_token}',
                 'Content-Type': 'application/json',
+                'LinkedIn-Version': '202304',
                 'X-Restli-Protocol-Version': '2.0.0'
             },
             json={
-                "author": f"urn:li:member:{linkedin_member_id}",
-                "lifecycleState": "PUBLISHED",
-                "specificContent": {
-                    "com.linkedin.ugc.ShareContent": {
-                        "shareCommentary": {
-                            "text": post_content[:3000]
-                        },
-                        "shareMediaCategory": "NONE"
-                    }
+                "author": f"urn:li:person:{linkedin_member_id}",
+                "commentary": post_content[:3000],
+                "visibility": "PUBLIC",
+                "distribution": {
+                    "feedDistribution": "MAIN_FEED",
+                    "targetEntities": [],
+                    "thirdPartyDistributionChannels": []
                 },
-                "visibility": {
-                    "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
-                }
+                "content": {
+                    "article": None
+                },
+                "lifecycleState": "PUBLISHED",
+                "isReshareDisabledByAuthor": False
             }
         ))
 

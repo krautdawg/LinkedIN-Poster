@@ -3,10 +3,9 @@ import openai
 import os
 import sys
 import asyncio
-import json
 from newsapi.newsapi_client import NewsApiClient
 import datetime
-from telegram.ext import Application, MessageHandler, filters
+from telegram.ext import Application
 
 # API key checks
 openai.api_key = os.environ.get('OPENAI_API_KEY')
@@ -93,18 +92,14 @@ def create_linkedin_posts(articles):
         })
     return {"posts": posts}
 
-stored_posts = None
-
 async def send_to_telegram(posts):
-    global stored_posts
-    stored_posts = posts
     try:
         bot = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
         await bot.initialize()
         
-        for i, post in enumerate(posts['posts'], 1):
+        for post in posts['posts']:
             message = f"""
-📰 *AI News Update #{i}*
+📰 *AI News Update*
 
 {post['content']}
 
@@ -125,39 +120,15 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
         print(f"Error sending to Telegram: {str(e)}")
         sys.exit(1)
 
-def store_posts(posts):
-    with open('stored_posts.json', 'w', encoding='utf-8') as f:
-        json.dump(posts, f, ensure_ascii=False, indent=2)
-
 async def main():
     try:
         articles = get_recent_news()
         posts = create_linkedin_posts(articles)
-        store_posts(posts)  # Store posts in JSON file
         await send_to_telegram(posts)
         print("Successfully sent posts to Telegram")
     except Exception as e:
         print(f"Error: {str(e)}")
         sys.exit(1)
 
-async def handle_message(update, context):
-    global stored_posts
-    if not stored_posts:
-        await update.message.reply_text("No posts available. Please wait for the next update.")
-        return
-
-    text = update.message.text
-    if text in ['1', '2', '3']:
-        post_index = int(text) - 1
-        if post_index < len(stored_posts['posts']):
-            selected_post = stored_posts['posts'][post_index]
-            await update.message.reply_text(f"Selected Post {text}:\n\n{selected_post['content']}\n\nSource: {selected_post['sourceUrl']}")
-        else:
-            await update.message.reply_text("Invalid post number.")
-    else:
-        await update.message.reply_text("Please select a post by sending 1, 2, or 3.")
-
 if __name__ == '__main__':
-    application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-    application.run_polling()
+    asyncio.run(main())

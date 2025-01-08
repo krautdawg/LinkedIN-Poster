@@ -5,6 +5,7 @@ import sys
 import asyncio
 import json
 import logging
+import requests
 logging.getLogger("httpx").setLevel(logging.WARNING)
 logging.getLogger("telegram").setLevel(logging.WARNING)
 from newsapi.newsapi_client import NewsApiClient

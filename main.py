@@ -165,14 +165,13 @@ async def post_to_linkedin(post_content):
                 "specificContent": {
                     "com.linkedin.ugc.ShareContent": {
                         "shareCommentary": {
-                            "text": post_content
+                            "text": post_content[:3000]
                         },
-                        "shareMediaCategory": "NONE",
-                        "media": []
+                        "shareMediaCategory": "NONE"
                     }
                 },
                 "visibility": {
-                    "com.linkedin.ugc.MemberNetworkVisibility": "CONNECTIONS"
+                    "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
                 }
             }
         ))

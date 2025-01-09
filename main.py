@@ -153,35 +153,26 @@ async def post_to_linkedin(post_content):
         raise Exception("LinkedIn member ID not found in environment variables")
 
     try:
-        response = await asyncio.get_event_loop().run_in_executor(None, lambda: requests.post(
-            'https://api.linkedin.com/rest/posts',
-            headers={
-                'Authorization': f'Bearer {access_token}',
-                'Content-Type': 'application/json',
-                'LinkedIn-Version': "2",
-                'X-Restli-Protocol-Version': '2.0.0'
-            },
-            json={
-                "author": f"urn:li:person:{linkedin_member_id}",
-                "commentary": post_content[:3000],
-                "visibility": "PUBLIC",
-                "distribution": {
-                    "feedDistribution": "MAIN_FEED",
-                    "targetEntities": [],
-                    "thirdPartyDistributionChannels": []
+        restli_client = RestliClient()
+        response = await asyncio.get_event_loop().run_in_executor(
+            None,
+            lambda: restli_client.create(
+                resource_path="/posts",
+                entity={
+                    "author": f"urn:li:person:{linkedin_member_id}",
+                    "commentary": post_content[:3000],
+                    "visibility": "PUBLIC",
+                    "distribution": {
+                        "feedDistribution": "MAIN_FEED",
+                        "targetEntities": [],
+                        "thirdPartyDistributionChannels": [],
+                    },
+                    "lifecycleState": "PUBLISHED",
                 },
-                "content": {
-                    "article": None
-                },
-                "lifecycleState": "PUBLISHED",
-                "isReshareDisabledByAuthor": False
-            }
-        ))
-
-        if not response.ok:
-            error_detail = response.json() if response.content else "No error details available"
-            raise Exception(f"LinkedIn API error {response.status_code}: {error_detail}")
-
+                version_string="202302",
+                access_token=access_token
+            )
+        )
         return True
     except Exception as e:
         print(f"Error posting to LinkedIn: {str(e)}")

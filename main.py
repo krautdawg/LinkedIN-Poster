@@ -158,7 +158,7 @@ async def post_to_linkedin(post_content):
             headers={
                 'Authorization': f'Bearer {access_token}',
                 'Content-Type': 'application/json',
-                'LinkedIn-Version': '202312',
+                'LinkedIn-Version': "2",
                 'X-Restli-Protocol-Version': '2.0.0'
             },
             json={

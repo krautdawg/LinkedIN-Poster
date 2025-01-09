@@ -166,9 +166,17 @@ async def post_to_linkedin(post_content):
                     "distribution": {
                         "feedDistribution": "MAIN_FEED",
                         "targetEntities": [],
-                        "thirdPartyDistributionChannels": [],
+                        "thirdPartyDistributionChannels": []
+                    },
+                    "content": {
+                        "article": {
+                            "source": "https://www.linkedin.com",
+                            "title": "AI News Update",
+                            "thumbnail": None
+                        }
                     },
                     "lifecycleState": "PUBLISHED",
+                    "isReshareDisabledByAuthor": False
                 },
                 version_string="202302",
                 access_token=access_token

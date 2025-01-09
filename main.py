@@ -174,9 +174,23 @@ async def post_to_linkedin(post_content):
                 access_token=access_token
             )
         )
-        return True
+        
+        # Check if we got a valid entity ID back
+        if hasattr(response, 'entity_id') and response.entity_id:
+            print(f"Successfully posted to LinkedIn with ID: {response.entity_id}")
+            return True
+        else:
+            print("No entity ID returned from LinkedIn API")
+            return False
+            
     except Exception as e:
         print(f"Error posting to LinkedIn: {str(e)}")
+        if hasattr(e, 'response') and hasattr(e.response, 'json'):
+            try:
+                error_details = e.response.json()
+                print(f"LinkedIn API error details: {error_details}")
+            except:
+                pass
         return False
 
 async def handle_selection(update, context):

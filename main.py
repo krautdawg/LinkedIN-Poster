@@ -155,40 +155,39 @@ async def post_to_linkedin(post_content):
 
     try:
         restli_client = RestliClient()
+        post_data = {
+            "author": f"urn:li:person:{linkedin_member_id}",
+            "commentary": post_content[:3000],
+            "visibility": "PUBLIC",
+            "distribution": {
+                "feedDistribution": "MAIN_FEED",
+                "targetEntities": [],
+                "thirdPartyDistributionChannels": []
+            },
+            "lifecycleState": "PUBLISHED",
+            "isReshareDisabledByAuthor": False
+        }
+        
+        print("Attempting to post to LinkedIn with data:", json.dumps(post_data, indent=2))
+        
         response = await asyncio.get_event_loop().run_in_executor(
             None,
             lambda: restli_client.create(
                 resource_path="/posts",
-                entity={
-                    "author": f"urn:li:person:{linkedin_member_id}",
-                    "commentary": post_content[:3000],
-                    "visibility": "PUBLIC",
-                    "distribution": {
-                        "feedDistribution": "MAIN_FEED",
-                        "targetEntities": [],
-                        "thirdPartyDistributionChannels": []
-                    },
-                    "content": {
-                        "article": {
-                            "source": "https://www.linkedin.com",
-                            "title": "AI News Update",
-                            "thumbnail": None
-                        }
-                    },
-                    "lifecycleState": "PUBLISHED",
-                    "isReshareDisabledByAuthor": False
-                },
+                entity=post_data,
                 version_string="202302",
                 access_token=access_token
             )
         )
         
-        # Check if we got a valid entity ID back
         if hasattr(response, 'entity_id') and response.entity_id:
             print(f"Successfully posted to LinkedIn with ID: {response.entity_id}")
             return True
+        elif hasattr(response, 'status') and response.status:
+            print(f"LinkedIn API returned status: {response.status}")
+            return False
         else:
-            print("No entity ID returned from LinkedIn API")
+            print("LinkedIn API response:", vars(response))
             return False
             
     except Exception as e:

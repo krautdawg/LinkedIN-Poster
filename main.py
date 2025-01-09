@@ -5,6 +5,7 @@ import asyncio
 import json
 import logging
 import requests
+from linkedin_api.clients.restli.client import RestliClient
 logging.getLogger("httpx").setLevel(logging.WARNING)
 logging.getLogger("telegram").setLevel(logging.WARNING)
 from newsapi.newsapi_client import NewsApiClient

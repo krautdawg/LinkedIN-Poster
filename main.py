@@ -219,13 +219,13 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
             return False
             
         except Exception as e:
-            print(f"Error posting to LinkedIn: {str(e)}")
-            if hasattr(e, 'response') and hasattr(e.response, 'json'):
+            print(f"LinkedIn API Error: {str(e)}")
+            if hasattr(e, 'response'):
                 try:
-                    error_details = e.response.json()
-                    print(f"LinkedIn API error details: {error_details}")
-                except:
-                    pass
+                    print(f"Raw Response: {e.response.text}")
+                    print(f"Status Code: {e.response.status_code}")
+                except AttributeError:
+                    print(f"Full error details: {repr(e)}")
             return False
 
 async def handle_selection(update, context):

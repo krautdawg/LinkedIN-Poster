@@ -1,66 +1,102 @@
-import openai
-import os
-import sys
+
 import asyncio
+import datetime
 import json
 import logging
+import os
+import sys
+from typing import Dict, List
+
+import openai
 import requests
 from linkedin_api.clients.restli.client import RestliClient
+from newsapi.newsapi_client import NewsApiClient
+from telegram.ext import Application, MessageHandler, filters
+
+# Configure logging
 logging.getLogger("httpx").setLevel(logging.WARNING)
 logging.getLogger("telegram").setLevel(logging.WARNING)
-from newsapi.newsapi_client import NewsApiClient
-import datetime
-from telegram.ext import Application, CommandHandler, MessageHandler, filters
 
-# API key checks
-openai.api_key = os.environ.get('OPENAI_API_KEY')
-newsapi = NewsApiClient(api_key=os.environ.get('NEWS_API_KEY'))
-TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
-TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
+# Environment variables
+class Config:
+    OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+    NEWS_API_KEY = os.environ.get('NEWS_API_KEY')
+    TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
+    TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
+    LINKEDIN_ACCESS_TOKEN = os.environ.get('LINKEDIN_ACCESS_TOKEN')
+    LINKEDIN_MEMBER_ID = os.environ.get('LINKEDIN_MEMBER_ID')
 
-if not all([openai.api_key, os.environ.get('NEWS_API_KEY'), TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID]):
-    sys.stderr.write("""
-    Missing required keys. Please set:
-    - OPENAI_API_KEY
-    - NEWS_API_KEY
-    - TELEGRAM_BOT_TOKEN
-    - TELEGRAM_CHAT_ID
-    in the Secrets Tool.
-    """)
-    exit(1)
+# Initialize APIs
+openai.api_key = Config.OPENAI_API_KEY
+newsapi = NewsApiClient(api_key=Config.NEWS_API_KEY)
 
-def get_recent_news():
-    sources = [
+def check_environment():
+    """Verify all required environment variables are set"""
+    if not all([Config.OPENAI_API_KEY, Config.NEWS_API_KEY, Config.TELEGRAM_BOT_TOKEN, Config.TELEGRAM_CHAT_ID]):
+        sys.stderr.write("""
+        Missing required keys. Please set:
+        - OPENAI_API_KEY
+        - NEWS_API_KEY
+        - TELEGRAM_BOT_TOKEN
+        - TELEGRAM_CHAT_ID
+        in the Secrets Tool.
+        """)
+        exit(1)
+
+class NewsCollector:
+    SOURCES = [
         'faz.net', 'sueddeutsche.de', 'zeit.de', 'welt.de', 'handelsblatt.com',
         'heise.de', 'golem.de', 't3n.de', 'spiegel.de', 'focus.de',
         'tagesschau.de', 'stern.de', 'wiwo.de', 'manager-magazin.de'
     ]
 
-    all_articles = []
-    seven_days_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime('%Y-%m-%d')
+    @staticmethod
+    def get_recent_news() -> List[Dict]:
+        """Collect recent AI-related news from German sources"""
+        all_articles = []
+        seven_days_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime('%Y-%m-%d')
 
-    for source in sources:
-        if len(all_articles) >= 3:
-            break
+        for source in NewsCollector.SOURCES:
+            if len(all_articles) >= 3:
+                break
 
-        articles = newsapi.get_everything(
-            q=f'("Künstliche Intelligenz") AND NOT "ChatGPT" AND NOT "KI-Newsletter"',
-            language='de',
-            sort_by='relevancy',
-            page_size=1,
-            domains=source,
-            from_param=seven_days_ago
-        )
+            articles = newsapi.get_everything(
+                q='("Künstliche Intelligenz") AND NOT "ChatGPT" AND NOT "KI-Newsletter"',
+                language='de',
+                sort_by='relevancy',
+                page_size=1,
+                domains=source,
+                from_param=seven_days_ago
+            )
 
-        if articles['articles'] and not any(a['url'].split('/')[2] == articles['articles'][0]['url'].split('/')[2] for a in all_articles):
-            all_articles.append(articles['articles'][0])
+            if articles['articles'] and not any(
+                a['url'].split('/')[2] == articles['articles'][0]['url'].split('/')[2] 
+                for a in all_articles
+            ):
+                all_articles.append(articles['articles'][0])
 
-    return all_articles[:3]
+        return all_articles[:3]
 
-def create_linkedin_posts(articles):
-    posts = []
-    for article in articles:
-        content = f"Article: {article['title']}\nURL: {article['url']}\nDescription: {article['description']}"
+class ContentGenerator:
+    @staticmethod
+    def create_linkedin_posts(articles: List[Dict]) -> Dict:
+        """Generate LinkedIn posts using OpenAI"""
+        posts = []
+        for article in articles:
+            content = f"Article: {article['title']}\nURL: {article['url']}\nDescription: {article['description']}"
+            post_content = ContentGenerator._generate_post_content(content)
+            sentiment = ContentGenerator._analyze_sentiment(content)
+            
+            posts.append({
+                "content": post_content,
+                "sourceUrl": article['url'],
+                "sentiment": sentiment
+            })
+        return {"posts": posts}
+
+    @staticmethod
+    def _generate_post_content(content: str) -> str:
+        """Generate post content using GPT-4"""
         response = openai.chat.completions.create(
             model="gpt-4",
             messages=[
@@ -69,8 +105,12 @@ def create_linkedin_posts(articles):
             ],
             temperature=0.7
         )
+        return response.choices[0].message.content
 
-        sentiment_response = openai.chat.completions.create(
+    @staticmethod
+    def _analyze_sentiment(content: str) -> Dict:
+        """Analyze content sentiment using GPT-4"""
+        response = openai.chat.completions.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "Analyze the sentiment of this article. Return only two numbers: rating (1-5, where 5 is most positive) and confidence (0-1)."},
@@ -78,39 +118,43 @@ def create_linkedin_posts(articles):
             ],
             temperature=0.3
         )
-
-        sentiment_text = sentiment_response.choices[0].message.content
+        
         try:
-            rating, confidence = map(float, sentiment_text.split())
+            rating, confidence = map(float, response.choices[0].message.content.split())
             rating = max(1, min(5, rating))
             confidence = max(0, min(1, confidence))
         except:
             rating, confidence = 3, 0.5
+            
+        return {"rating": rating, "confidence": confidence}
 
-        posts.append({
-            "content": response.choices[0].message.content,
-            "sourceUrl": article['url'],
-            "sentiment": {
-                "rating": rating,
-                "confidence": confidence
-            }
-        })
-    return {"posts": posts}
+class Storage:
+    @staticmethod
+    def store_posts(posts: Dict) -> None:
+        """Store posts in JSON file"""
+        with open('stored_posts.json', 'w', encoding='utf-8') as f:
+            json.dump(posts, f, ensure_ascii=False, indent=2)
 
-def store_posts(posts):
-    with open('stored_posts.json', 'w', encoding='utf-8') as f:
-        json.dump(posts, f, ensure_ascii=False, indent=2)
+    @staticmethod
+    def store_selected_post(post: Dict) -> None:
+        """Store selected post in JSON file"""
+        with open('selected_post.json', 'w', encoding='utf-8') as f:
+            json.dump(post, f, ensure_ascii=False, indent=2)
 
-async def send_to_telegram(posts):
-    global stored_posts
-    stored_posts = posts
-    try:
-        bot = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
-        await bot.initialize()
-        store_posts(posts)  # Store posts for future processing
+class SocialMedia:
+    stored_posts = None
 
-        for i, post in enumerate(posts['posts'], 1):
-            message = f"""
+    @staticmethod
+    async def send_to_telegram(posts: Dict) -> None:
+        """Send posts to Telegram channel"""
+        SocialMedia.stored_posts = posts
+        try:
+            bot = Application.builder().token(Config.TELEGRAM_BOT_TOKEN).build()
+            await bot.initialize()
+            Storage.store_posts(posts)
+
+            for i, post in enumerate(posts['posts'], 1):
+                message = f"""
 📰 *AI News Update #{i}*
 
 {post['content']}
@@ -121,120 +165,111 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
 
 🔗 Source: {post['sourceUrl']}
 """
-            await bot.bot.send_message(
-                chat_id=TELEGRAM_CHAT_ID,
-                text=message,
-                parse_mode='Markdown'
-            )
-        await bot.shutdown()
+                await bot.bot.send_message(
+                    chat_id=Config.TELEGRAM_CHAT_ID,
+                    text=message,
+                    parse_mode='Markdown'
+                )
+            await bot.shutdown()
 
-    except Exception as e:
-        print(f"Error sending to Telegram: {str(e)}")
-        sys.exit(1)
+        except Exception as e:
+            print(f"Error sending to Telegram: {str(e)}")
+            sys.exit(1)
 
-async def main():
-    try:
-        articles = get_recent_news()
-        posts = create_linkedin_posts(articles)
-        await send_to_telegram(posts)
-        print("Successfully sent posts to Telegram")
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        sys.exit(1)
+    @staticmethod
+    async def post_to_linkedin(post_content: str) -> bool:
+        """Post content to LinkedIn"""
+        if not Config.LINKEDIN_ACCESS_TOKEN or not Config.LINKEDIN_MEMBER_ID:
+            raise Exception("LinkedIn credentials not found in environment variables")
 
-stored_posts = None
-
-async def post_to_linkedin(post_content):
-    access_token = os.environ.get('LINKEDIN_ACCESS_TOKEN')
-    linkedin_member_id = os.environ.get('LINKEDIN_MEMBER_ID')
-
-    if not access_token:
-        raise Exception("LinkedIn access token not found in environment variables")
-    if not linkedin_member_id:
-        raise Exception("LinkedIn member ID not found in environment variables")
-
-    try:
-        restli_client = RestliClient()
-        response = await asyncio.get_event_loop().run_in_executor(
-            None,
-            lambda: restli_client.create(
-                resource_path="/posts",
-                entity={
-                    "author": f"urn:li:person:{linkedin_member_id}",
-                    "commentary": post_content[:3000],
-                    "visibility": "PUBLIC",
-                    "distribution": {
-                        "feedDistribution": "MAIN_FEED",
-                        "targetEntities": [],
-                        "thirdPartyDistributionChannels": []
+        try:
+            restli_client = RestliClient()
+            response = await asyncio.get_event_loop().run_in_executor(
+                None,
+                lambda: restli_client.create(
+                    resource_path="/posts",
+                    entity={
+                        "author": f"urn:li:person:{Config.LINKEDIN_MEMBER_ID}",
+                        "commentary": post_content[:3000],
+                        "visibility": "PUBLIC",
+                        "distribution": {
+                            "feedDistribution": "MAIN_FEED",
+                            "targetEntities": [],
+                            "thirdPartyDistributionChannels": []
+                        },
+                        "content": {
+                            "article": {
+                                "source": "https://www.linkedin.com",
+                                "title": "AI News Update",
+                                "thumbnail": None
+                            }
+                        },
+                        "lifecycleState": "PUBLISHED",
+                        "isReshareDisabledByAuthor": False
                     },
-                    "content": {
-                        "article": {
-                            "source": "https://www.linkedin.com",
-                            "title": "AI News Update",
-                            "thumbnail": None
-                        }
-                    },
-                    "lifecycleState": "PUBLISHED",
-                    "isReshareDisabledByAuthor": False
-                },
-                version_string="202302",
-                access_token=access_token
+                    version_string="202302",
+                    access_token=Config.LINKEDIN_ACCESS_TOKEN
+                )
             )
-        )
-        
-        # Check if we got a valid entity ID back
-        if hasattr(response, 'entity_id') and response.entity_id:
-            print(f"Successfully posted to LinkedIn with ID: {response.entity_id}")
-            return True
-        else:
+            
+            if hasattr(response, 'entity_id') and response.entity_id:
+                print(f"Successfully posted to LinkedIn with ID: {response.entity_id}")
+                return True
             print("No entity ID returned from LinkedIn API")
             return False
             
-    except Exception as e:
-        print(f"Error posting to LinkedIn: {str(e)}")
-        if hasattr(e, 'response') and hasattr(e.response, 'json'):
-            try:
-                error_details = e.response.json()
-                print(f"LinkedIn API error details: {error_details}")
-            except:
-                pass
-        return False
+        except Exception as e:
+            print(f"Error posting to LinkedIn: {str(e)}")
+            if hasattr(e, 'response') and hasattr(e.response, 'json'):
+                try:
+                    error_details = e.response.json()
+                    print(f"LinkedIn API error details: {error_details}")
+                except:
+                    pass
+            return False
 
 async def handle_selection(update, context):
-    global stored_posts
-    if not stored_posts:
+    """Handle user selection of posts"""
+    if not SocialMedia.stored_posts:
         await update.message.reply_text("No articles available. Please wait for the next update.")
         return
 
     try:
         selection = int(update.message.text)
         if 1 <= selection <= 3:
-            selected_post = stored_posts['posts'][selection - 1]
+            selected_post = SocialMedia.stored_posts['posts'][selection - 1]
             await update.message.reply_text(
                 f"Selected Article {selection}:\n\n"
                 f"{selected_post['content']}\n\n"
                 f"Source: {selected_post['sourceUrl']}"
             )
-            # Store selection for future processing
-            with open('selected_post.json', 'w', encoding='utf-8') as f:
-                json.dump(selected_post, f, ensure_ascii=False, indent=2)
+            Storage.store_selected_post(selected_post)
 
-            # Post to LinkedIn
-            success = await post_to_linkedin(selected_post['content'])
-            if success:
-                await update.message.reply_text("Successfully posted to LinkedIn!")
-            else:
-                await update.message.reply_text("Failed to post to LinkedIn. Please check the logs.")
+            success = await SocialMedia.post_to_linkedin(selected_post['content'])
+            await update.message.reply_text(
+                "Successfully posted to LinkedIn!" if success 
+                else "Failed to post to LinkedIn. Please check the logs."
+            )
         else:
             await update.message.reply_text("Please select a number between 1 and 3.")
     except (ValueError, IndexError):
         await update.message.reply_text("Please send a number between 1 and 3 to select an article.")
 
+async def main():
+    """Main application entry point"""
+    try:
+        articles = NewsCollector.get_recent_news()
+        posts = ContentGenerator.create_linkedin_posts(articles)
+        await SocialMedia.send_to_telegram(posts)
+        print("Successfully sent posts to Telegram")
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        sys.exit(1)
+
 if __name__ == '__main__':
-    application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+    check_environment()
+    application = Application.builder().token(Config.TELEGRAM_BOT_TOKEN).build()
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_selection))
 
-    # Run the bot and the main function
     asyncio.get_event_loop().create_task(main())
     application.run_polling()

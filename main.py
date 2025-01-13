@@ -219,11 +219,11 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
             return False
             
         except Exception as e:
-            print(f"LinkedIn API Error: {str(e)}")
+            error_code = e.response.status_code if hasattr(e, 'response') and hasattr(e.response, 'status_code') else 'N/A'
+            print(f"LinkedIn API Error [{error_code}]: {str(e)}")
             if hasattr(e, 'response'):
                 try:
                     print(f"Raw Response: {e.response.text}")
-                    print(f"Status Code: {e.response.status_code}")
                 except AttributeError:
                     print(f"Full error details: {repr(e)}")
             return False

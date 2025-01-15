@@ -207,7 +207,7 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
                         "lifecycleState": "PUBLISHED",
                         "isReshareDisabledByAuthor": False
                     },
-                    version_string="202302",
+                    version_string="202411",
                     access_token=Config.LINKEDIN_ACCESS_TOKEN
                 )
             )

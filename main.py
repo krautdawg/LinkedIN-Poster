@@ -220,12 +220,20 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
             
         except Exception as e:
             error_code = e.response.status_code if hasattr(e, 'response') and hasattr(e.response, 'status_code') else 'N/A'
-            print(f"LinkedIn API Error [{error_code}]: {str(e)}")
+            error_message = str(e)
+            
             if hasattr(e, 'response'):
                 try:
+                    error_details = e.response.json() if e.response.text else {}
+                    print(f"LinkedIn API Error [{error_code}]:")
+                    print(f"Message: {error_message}")
+                    print(f"Full API Response: {error_details}")
                     print(f"Raw Response: {e.response.text}")
-                except AttributeError:
-                    print(f"Full error details: {repr(e)}")
+                except Exception as parse_error:
+                    print(f"LinkedIn API Error [{error_code}]: {error_message}")
+                    print(f"Could not parse response: {str(parse_error)}")
+            else:
+                print(f"LinkedIn API Error: {error_message}")
             return False
 
 async def handle_selection(update, context):

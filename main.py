@@ -245,7 +245,9 @@ async def handle_selection(update, context):
             )
             Storage.store_selected_post(selected_post)
 
-            success = await SocialMedia.post_to_linkedin(selected_post['content'])
+            # Extract just the content part before the URL
+            post_content = selected_post['content'].split('\n\n')[0]
+            success = await SocialMedia.post_to_linkedin(post_content)
             await update.message.reply_text(
                 "Successfully posted to LinkedIn!" if success 
                 else "Failed to post to LinkedIn. Please check the logs."

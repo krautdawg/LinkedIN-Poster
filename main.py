@@ -272,10 +272,8 @@ async def handle_selection(update, context):
             articles = NewsCollector.get_recent_news()
             title = next((article['title'] for article in articles if article['url'] == selected_post['sourceUrl']), "AI News Article")
             success = await SocialMedia.post_to_linkedin(post_content, selected_post['sourceUrl'], title)
-            await update.message.reply_text(
-                "Successfully posted to LinkedIn!" if success 
-                else "Failed to post to LinkedIn. Please check the logs."
-            )
+            print("Successfully posted to LinkedIn!" if success else "Failed to post to LinkedIn. Please check the logs.")
+            sys.exit(0)
         else:
             await update.message.reply_text("Please select a number between 1 and 3.")
     except (ValueError, IndexError):

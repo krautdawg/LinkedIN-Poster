@@ -100,7 +100,7 @@ class ContentGenerator:
         response = openai.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "You are a LinkedIn content expert specializing in AI trends. Create an smart German post using the informal Du about this article. Write in a straightforward, professional tone that is approachable and authentic. Balance insights and value for the reader with a conversational style that feels relatable and grounded. When appropriate, incorporate elements of tech-savvy language with a focus on practical applications, especially in Artificial Intelligence and digitization for small and medium sized businesses. Keep the message concise with no more than 90 words.  Include relevant hashtags."},
+                {"role": "system", "content": "You are a LinkedIn content expert specializing in AI trends. Create an engaging German post using the informal Du about this article. Include relevant hashtags."},
                 {"role": "user", "content": content}
             ],
             temperature=0.7
@@ -148,12 +148,11 @@ class SocialMedia:
     async def send_to_telegram(posts: Dict) -> None:
         """Send posts to Telegram channel"""
         SocialMedia.stored_posts = posts
-        Storage.store_posts(posts)
-        
         try:
             bot = Application.builder().token(Config.TELEGRAM_BOT_TOKEN).build()
             await bot.initialize()
-            
+            Storage.store_posts(posts)
+
             for i, post in enumerate(posts['posts'], 1):
                 message = f"""
 📰 *AI News Update #{i}*
@@ -166,20 +165,16 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
 
 🔗 Source: {post['sourceUrl']}
 """
-                try:
-                    await bot.bot.send_message(
-                        chat_id=Config.TELEGRAM_CHAT_ID,
-                        text=message,
-                        parse_mode='Markdown',
-                        timeout=30
-                    )
-                except Exception as msg_error:
-                    print(f"Error sending message {i}: {str(msg_error)}")
-                    continue
-                    
+                await bot.bot.send_message(
+                    chat_id=Config.TELEGRAM_CHAT_ID,
+                    text=message,
+                    parse_mode='Markdown'
+                )
             await bot.shutdown()
+
         except Exception as e:
-            print(f"Error with Telegram bot: {str(e)}")
+            print(f"Error sending to Telegram: {str(e)}")
+            sys.exit(1)
 
     @staticmethod
     async def post_to_linkedin(post_content: str, source_url: str, title: str = "AI News Article") -> bool:

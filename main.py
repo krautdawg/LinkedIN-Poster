@@ -148,11 +148,12 @@ class SocialMedia:
     async def send_to_telegram(posts: Dict) -> None:
         """Send posts to Telegram channel"""
         SocialMedia.stored_posts = posts
+        Storage.store_posts(posts)
+        
         try:
             bot = Application.builder().token(Config.TELEGRAM_BOT_TOKEN).build()
             await bot.initialize()
-            Storage.store_posts(posts)
-
+            
             for i, post in enumerate(posts['posts'], 1):
                 message = f"""
 📰 *AI News Update #{i}*
@@ -165,16 +166,20 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
 
 🔗 Source: {post['sourceUrl']}
 """
-                await bot.bot.send_message(
-                    chat_id=Config.TELEGRAM_CHAT_ID,
-                    text=message,
-                    parse_mode='Markdown'
-                )
+                try:
+                    await bot.bot.send_message(
+                        chat_id=Config.TELEGRAM_CHAT_ID,
+                        text=message,
+                        parse_mode='Markdown',
+                        timeout=30
+                    )
+                except Exception as msg_error:
+                    print(f"Error sending message {i}: {str(msg_error)}")
+                    continue
+                    
             await bot.shutdown()
-
         except Exception as e:
-            print(f"Error sending to Telegram: {str(e)}")
-            sys.exit(1)
+            print(f"Error with Telegram bot: {str(e)}")
 
     @staticmethod
     async def post_to_linkedin(post_content: str, source_url: str, title: str = "AI News Article") -> bool:

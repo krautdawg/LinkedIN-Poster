@@ -180,6 +180,21 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
         """Post content to LinkedIn"""
         if not Config.LINKEDIN_ACCESS_TOKEN or not Config.LINKEDIN_MEMBER_ID:
             raise Exception("LinkedIn credentials not found in environment variables")
+            
+        # Get meta tags from source URL
+        try:
+            response = requests.get(source_url)
+            from bs4 import BeautifulSoup
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            # Try to get OpenGraph image first, then Twitter image, then any other image meta tag
+            thumbnail_url = (
+                soup.find('meta', property='og:image')
+                or soup.find('meta', property='twitter:image')
+                or soup.find('meta', property='image')
+            )
+            if thumbnail_url:
+                thumbnail_url = thumbnail_url.get('content')
 
         try:
             headers = {
@@ -206,7 +221,8 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
                                 "originalUrl": source_url,
                                 "title": {
                                     "text": title
-                                }
+                                },
+                                "thumbnails": [{"url": thumbnail_url}] if thumbnail_url else []
                             }
                         ]
                     }

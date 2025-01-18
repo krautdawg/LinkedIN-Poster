@@ -197,7 +197,19 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
                         "shareCommentary": {
                             "text": post_content[:3000]
                         },
-                        "shareMediaCategory": "NONE"
+                        "shareMediaCategory": "ARTICLE",
+                        "media": [
+                            {
+                                "status": "READY",
+                                "description": {
+                                    "text": "AI News Update"
+                                },
+                                "originalUrl": selected_post['sourceUrl'],
+                                "title": {
+                                    "text": "AI News Article"
+                                }
+                            }
+                        ]
                     }
                 },
                 "visibility": {

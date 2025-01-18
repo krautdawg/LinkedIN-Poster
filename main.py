@@ -61,7 +61,7 @@ class NewsCollector:
                 break
 
             articles = newsapi.get_everything(
-                q='("Künstliche Intelligenz") AND NOT "ChatGPT" AND NOT "KI-Newsletter"',
+                q='("Künstliche Intelligenz") AND NOT "KI-Newsletter"',
                 language='de',
                 sort_by='relevancy',
                 page_size=1,

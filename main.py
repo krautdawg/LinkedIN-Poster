@@ -271,9 +271,16 @@ async def handle_selection(update, context):
             articles = NewsCollector.get_recent_news()
             title = next((article['title'] for article in articles if article['url'] == selected_post['sourceUrl']), "AI News Article")
             success = await SocialMedia.post_to_linkedin(post_content, selected_post['sourceUrl'], title)
-            print("Successfully posted to LinkedIn!" if success else "Failed to post to LinkedIn. Please check the logs.")
+            status_message = "Successfully posted to LinkedIn!" if success else "Failed to post to LinkedIn. Please check the logs."
+            print(status_message)
+            await context.bot.send_message(
+                chat_id=Config.TELEGRAM_CHAT_ID,
+                text=status_message
+            )
             print("Script will end in 1 minute...")
             await asyncio.sleep(60)  # Wait for 1 minute
+            await application.stop()
+            await application.shutdown()
             sys.exit(0)
         else:
             await update.message.reply_text("Please select a number between 1 and 3.")

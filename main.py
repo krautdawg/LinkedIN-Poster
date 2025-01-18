@@ -182,6 +182,7 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
             raise Exception("LinkedIn credentials not found in environment variables")
             
         # Get meta tags from source URL
+        thumbnail_url = None
         try:
             response = requests.get(source_url)
             from bs4 import BeautifulSoup
@@ -195,7 +196,9 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
             )
             if thumbnail_url:
                 thumbnail_url = thumbnail_url.get('content')
-
+        except Exception as e:
+            print(f"Error fetching meta tags: {str(e)}")
+            
         try:
             headers = {
                 "Authorization": f"Bearer {Config.LINKEDIN_ACCESS_TOKEN}",

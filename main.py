@@ -61,7 +61,7 @@ class NewsCollector:
                 break
 
             articles = newsapi.get_everything(
-                q='("Künstliche Intelligenz") AND NOT "KI-Newsletter"',
+                q='("Künstliche Intelligenz") AND NOT "ChatGPT" AND NOT "KI-Newsletter"',
                 language='de',
                 sort_by='relevancy',
                 page_size=1,
@@ -100,7 +100,7 @@ class ContentGenerator:
         response = openai.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "You are a LinkedIn content expert specializing in AI trends. Create a smart sounding German post using the informal Du about this article. Write in a straightforward, professional tone that is approachable and authentic. Balance insights and value for the reader with a conversational style that feels relatable and grounded.  When appropriate incorporate elements of tech-savvy language with a focus on practical applications, especially in Artificial Intelligence and digitization for businesses. Keep the message concise to maximum 100 words and actionable. Include relevant hashtags."},
+                {"role": "system", "content": "You are a LinkedIn content expert specializing in AI trends. Create an engaging German post using the informal Du about this article. Include relevant hashtags."},
                 {"role": "user", "content": content}
             ],
             temperature=0.7
@@ -290,19 +290,12 @@ async def main():
         print("Successfully sent posts to Telegram")
     except Exception as e:
         print(f"Error: {str(e)}")
-        return
+        sys.exit(1)
 
 if __name__ == '__main__':
     check_environment()
     application = Application.builder().token(Config.TELEGRAM_BOT_TOKEN).build()
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_selection))
 
-    async def run_app():
-        try:
-            await main()
-            await application.run_polling()
-        except Exception as e:
-            print(f"Application error: {str(e)}")
-            await application.stop()
-
-    asyncio.run(run_app())
+    asyncio.get_event_loop().create_task(main())
+    application.run_polling()

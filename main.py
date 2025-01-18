@@ -96,11 +96,11 @@ class ContentGenerator:
 
     @staticmethod
     def _generate_post_content(content: str) -> str:
-        """Generate post content using GPT-4"""
+        """Generate post content using GPT-4o"""
         response = openai.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4o",
             messages=[
-                {"role": "system", "content": "You are a LinkedIn content expert specializing in AI trends. Create an engaging German post using the informal Du about this article. Include relevant hashtags."},
+                {"role": "system", "content": "You are an consulting for small and medium sized businesses specializing in AI trends. Create a smart sounding German post for LinkedIN using the informal Du about this article. Write in a straightforward, professional tone that is approachable and authentic. Balance insights and value for the reader with a conversational style that feels relatable and grounded.  When appropriate incorporate elements of tech-savvy language with a focus on practical applications, especially in Artificial Intelligence and digitization for small and medium sized businesses. Keep the message concise to maximum 100 words and actionable. Include relevant hashtags."},
                 {"role": "user", "content": content}
             ],
             temperature=0.7

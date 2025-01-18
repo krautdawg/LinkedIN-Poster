@@ -1,4 +1,3 @@
-
 import asyncio
 import datetime
 import json
@@ -86,7 +85,7 @@ class ContentGenerator:
             content = f"Article: {article['title']}\nURL: {article['url']}\nDescription: {article['description']}"
             post_content = ContentGenerator._generate_post_content(content)
             sentiment = ContentGenerator._analyze_sentiment(content)
-            
+
             posts.append({
                 "content": post_content,
                 "sourceUrl": article['url'],
@@ -118,14 +117,14 @@ class ContentGenerator:
             ],
             temperature=0.3
         )
-        
+
         try:
             rating, confidence = map(float, response.choices[0].message.content.split())
             rating = max(1, min(5, rating))
             confidence = max(0, min(1, confidence))
         except:
             rating, confidence = 3, 0.5
-            
+
         return {"rating": rating, "confidence": confidence}
 
 class Storage:
@@ -188,7 +187,7 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
                 "Content-Type": "application/json",
                 "X-Restli-Protocol-Version": "2.0.0"
             }
-            
+
             payload = {
                 "author": f"urn:li:person:{Config.LINKEDIN_MEMBER_ID}",
                 "lifecycleState": "PUBLISHED",
@@ -225,17 +224,17 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
                     json=payload
                 )
             )
-            
+
             if response.status_code == 201:
                 print("Successfully posted to LinkedIn!")
                 return True
             print(f"Failed to post to LinkedIn. Status Code: {response.status_code}")
             print(f"Response: {response.text}")
             return False
-            
+
         except Exception as e:
             error_message = str(e)
-            
+
             if hasattr(e, 'response'):
                 try:
                     error_details = e.response.json() if e.response.text else {}
@@ -294,8 +293,10 @@ async def main():
 
 if __name__ == '__main__':
     check_environment()
-    application = Application.builder().token(Config.TELEGRAM_BOT_TOKEN).build()
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_selection))
+    #application = Application.builder().token(Config.TELEGRAM_BOT_TOKEN).build()
+    #application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_selection))
 
-    asyncio.get_event_loop().create_task(main())
-    application.run_polling()
+    # Run main and exit after completion
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
+    sys.exit(0)

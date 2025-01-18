@@ -268,11 +268,9 @@ async def handle_selection(update, context):
             Storage.store_selected_post(selected_post)
 
             post_content = selected_post['content'].split('\n\n')[0]
-            # Use the original article title from the stored posts
-            for article in articles:
-                if article['url'] == selected_post['sourceUrl']:
-                    title = article['title']
-                    break
+            # Get title from the source URL
+            articles = NewsCollector.get_recent_news()
+            title = next((article['title'] for article in articles if article['url'] == selected_post['sourceUrl']), "AI News Article")
             success = await SocialMedia.post_to_linkedin(post_content, selected_post['sourceUrl'], title)
             await update.message.reply_text(
                 "Successfully posted to LinkedIn!" if success 

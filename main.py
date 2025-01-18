@@ -1,4 +1,3 @@
-
 import asyncio
 import datetime
 import json
@@ -86,7 +85,7 @@ class ContentGenerator:
             content = f"Article: {article['title']}\nURL: {article['url']}\nDescription: {article['description']}"
             post_content = ContentGenerator._generate_post_content(content)
             sentiment = ContentGenerator._analyze_sentiment(content)
-            
+
             posts.append({
                 "content": post_content,
                 "sourceUrl": article['url'],
@@ -118,14 +117,14 @@ class ContentGenerator:
             ],
             temperature=0.3
         )
-        
+
         try:
             rating, confidence = map(float, response.choices[0].message.content.split())
             rating = max(1, min(5, rating))
             confidence = max(0, min(1, confidence))
         except:
             rating, confidence = 3, 0.5
-            
+
         return {"rating": rating, "confidence": confidence}
 
 class Storage:
@@ -188,7 +187,7 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
                 "Content-Type": "application/json",
                 "X-Restli-Protocol-Version": "2.0.0"
             }
-            
+
             payload = {
                 "author": f"urn:li:person:{Config.LINKEDIN_MEMBER_ID}",
                 "lifecycleState": "PUBLISHED",
@@ -225,17 +224,17 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
                     json=payload
                 )
             )
-            
+
             if response.status_code == 201:
                 print("Successfully posted to LinkedIn!")
                 return True
             print(f"Failed to post to LinkedIn. Status Code: {response.status_code}")
             print(f"Response: {response.text}")
             return False
-            
+
         except Exception as e:
             error_message = str(e)
-            
+
             if hasattr(e, 'response'):
                 try:
                     error_details = e.response.json() if e.response.text else {}
@@ -272,10 +271,10 @@ async def handle_selection(update, context):
             articles = NewsCollector.get_recent_news()
             title = next((article['title'] for article in articles if article['url'] == selected_post['sourceUrl']), "AI News Article")
             success = await SocialMedia.post_to_linkedin(post_content, selected_post['sourceUrl'], title)
-            await update.message.reply_text(
-                "Successfully posted to LinkedIn!" if success 
-                else "Failed to post to LinkedIn. Please check the logs."
-            )
+            print("Successfully posted to LinkedIn!" if success else "Failed to post to LinkedIn. Please check the logs.")
+            print("Script will end in 1 minute...")
+            await asyncio.sleep(60)  # Wait for 1 minute
+            sys.exit(0)
         else:
             await update.message.reply_text("Please select a number between 1 and 3.")
     except (ValueError, IndexError):

@@ -183,43 +183,45 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
             raise Exception("LinkedIn credentials not found in environment variables")
 
         try:
-            restli_client = RestliClient()
+            headers = {
+                "Authorization": f"Bearer {Config.LINKEDIN_ACCESS_TOKEN}",
+                "Content-Type": "application/json",
+                "X-Restli-Protocol-Version": "2.0.0"
+            }
+            
+            payload = {
+                "author": f"urn:li:person:{Config.LINKEDIN_MEMBER_ID}",
+                "lifecycleState": "PUBLISHED",
+                "specificContent": {
+                    "com.linkedin.ugc.ShareContent": {
+                        "shareCommentary": {
+                            "text": post_content[:3000]
+                        },
+                        "shareMediaCategory": "NONE"
+                    }
+                },
+                "visibility": {
+                    "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
+                }
+            }
+
             response = await asyncio.get_event_loop().run_in_executor(
                 None,
-                lambda: restli_client.create(
-                    resource_path="/posts",
-                    entity={
-                        "author": f"urn:li:person:{Config.LINKEDIN_MEMBER_ID}",
-                        "commentary": post_content[:3000],
-                        "visibility": "PUBLIC",
-                        "distribution": {
-                            "feedDistribution": "MAIN_FEED",
-                            "targetEntities": [],
-                            "thirdPartyDistributionChannels": []
-                        },
-                        "content": {
-                            "article": {
-                                "source": "https://www.linkedin.com",
-                                "title": "AI News Update",
-                                "thumbnail": None
-                            }
-                        },
-                        "lifecycleState": "PUBLISHED",
-                        "isReshareDisabledByAuthor": False
-                    },
-                    version_string="202411",
-                    access_token=Config.LINKEDIN_ACCESS_TOKEN
+                lambda: requests.post(
+                    "https://api.linkedin.com/v2/ugcPosts",
+                    headers=headers,
+                    json=payload
                 )
             )
             
-            if hasattr(response, 'entity_id') and response.entity_id:
-                print(f"Successfully posted to LinkedIn with ID: {response.entity_id}")
+            if response.status_code == 201:
+                print("Successfully posted to LinkedIn!")
                 return True
-            print("No entity ID returned from LinkedIn API")
+            print(f"Failed to post to LinkedIn. Status Code: {response.status_code}")
+            print(f"Response: {response.text}")
             return False
             
         except Exception as e:
-            error_code = e.response.status_code if hasattr(e, 'response') and hasattr(e.response, 'status_code') else 'N/A'
             error_message = str(e)
             
             if hasattr(e, 'response'):

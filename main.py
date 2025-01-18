@@ -177,7 +177,7 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
             sys.exit(1)
 
     @staticmethod
-    async def post_to_linkedin(post_content: str, source_url: str) -> bool:
+    async def post_to_linkedin(post_content: str, source_url: str, title: str = "AI News Article") -> bool:
         """Post content to LinkedIn"""
         if not Config.LINKEDIN_ACCESS_TOKEN or not Config.LINKEDIN_MEMBER_ID:
             raise Exception("LinkedIn credentials not found in environment variables")
@@ -206,7 +206,7 @@ Confidence: {post['sentiment']['confidence']*100:.1f}%
                                 },
                                 "originalUrl": source_url,
                                 "title": {
-                                    "text": "AI News Article"
+                                    "text": title
                                 }
                             }
                         ]
@@ -269,7 +269,9 @@ async def handle_selection(update, context):
 
             # Extract just the content part before the URL
             post_content = selected_post['content'].split('\n\n')[0]
-            success = await SocialMedia.post_to_linkedin(post_content, selected_post['sourceUrl'])
+            # Extract title from content (first line after "Article: ")
+            title = selected_post['content'].split('\n')[0].replace('Article: ', '')
+            success = await SocialMedia.post_to_linkedin(post_content, selected_post['sourceUrl'], title)
             await update.message.reply_text(
                 "Successfully posted to LinkedIn!" if success 
                 else "Failed to post to LinkedIn. Please check the logs."

@@ -61,7 +61,7 @@ class NewsCollector:
                 break
 
             articles = newsapi.get_everything(
-                q='("Künstliche Intelligenz") AND NOT "ChatGPT" AND NOT "KI-Newsletter"',
+                q='("Künstliche Intelligenz") AND NOT "KI-Newsletter"',
                 language='de',
                 sort_by='relevancy',
                 page_size=1,
@@ -100,7 +100,7 @@ class ContentGenerator:
         response = openai.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "You are a LinkedIn content expert specializing in AI trends. Create an engaging German post using the informal Du about this article. Include relevant hashtags."},
+                {"role": "system", "content": "You are a LinkedIn content expert specializing in AI trends. Create a smart sounding German post using the informal Du about this article. Write in a straightforward, professional tone that is approachable and authentic. Balance insights and value for the reader with a conversational style that feels relatable and grounded.  When appropriate incorporate elements of tech-savvy language with a focus on practical applications, especially in Artificial Intelligence and digitization for businesses. Keep the message concise to maximum 100 words and actionable. Include relevant hashtags."},
                 {"role": "user", "content": content}
             ],
             temperature=0.7

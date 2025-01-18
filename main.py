@@ -290,12 +290,19 @@ async def main():
         print("Successfully sent posts to Telegram")
     except Exception as e:
         print(f"Error: {str(e)}")
-        sys.exit(1)
+        return
 
 if __name__ == '__main__':
     check_environment()
     application = Application.builder().token(Config.TELEGRAM_BOT_TOKEN).build()
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_selection))
 
-    asyncio.get_event_loop().create_task(main())
-    application.run_polling()
+    async def run_app():
+        try:
+            await main()
+            await application.run_polling()
+        except Exception as e:
+            print(f"Application error: {str(e)}")
+            await application.stop()
+
+    asyncio.run(run_app())

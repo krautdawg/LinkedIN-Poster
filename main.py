@@ -46,8 +46,7 @@ class NewsCollector:
     SOURCES = [
         'faz.net', 'sueddeutsche.de', 'zeit.de', 'welt.de', 'handelsblatt.com',
         'heise.de', 'golem.de', 't3n.de', 'spiegel.de', 'focus.de',
-        'tagesschau.de', 'stern.de', 'wiwo.de', 'manager-magazin.de'
-    ]
+        'tagesschau.de', 'stern.de', 'wiwo.de', 'manager-magazin.de']
 
     @staticmethod
     def get_recent_news() -> List[Dict]:
@@ -60,7 +59,7 @@ class NewsCollector:
                 break
 
             articles = newsapi.get_everything(
-                q='("Künstliche Intelligenz") AND NOT "KI-Newsletter"',
+                q='("Künstliche Intelligenz" OR "KI-" OR ChatGPT) and (KMU) OR "Kleine Unternehmen" OR Mittelstand OR "Mittlere Unternehmen" OR "Kleinst-unternehmen") AND NOT "KI-Newsletter"',
                 language='de',
                 sort_by='relevancy',
                 page_size=1,
@@ -99,7 +98,7 @@ class ContentGenerator:
         response = openai.chat.completions.create(
             model="gpt-4o",
             messages=[
-                {"role": "system", "content": "You are an consulting for small and medium sized businesses specializing in AI trends. Create a smart sounding German post for LinkedIN using the informal Du about this article. Write in a straightforward, professional tone that is approachable and authentic. Balance insights and value for the reader with a conversational style that feels relatable and grounded.  When appropriate incorporate elements of tech-savvy language with a focus on practical applications, especially in Artificial Intelligence and digitization for small and medium sized businesses. Keep the message concise to maximum 100 words and actionable. Include relevant hashtags."},
+                {"role": "system", "content": "You are a humble consultant for small and medium sized businesses figuring out how to use AI applications for his clients. Please write a smart sounding German post for LinkedIN using the informal Du about this article. Write in a straightforward, professional tone that is approachable, humble and authentic. Balance insights and value for the reader with a witty style that feels relatable and grounded.  When appropriate incorporate elements of tech-savvy language with a focus on practical applications, especially in Artificial Intelligence and digitization for small and medium sized businesses. Keep the message concise to maximum 100 words. use no or at most 1 KIude relevant hashtags."},
                 {"role": "user", "content": content}
             ],
             temperature=0.7

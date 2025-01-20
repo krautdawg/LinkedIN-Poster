@@ -58,8 +58,14 @@ class NewsCollector:
             if len(all_articles) >= 3:
                 break
 
+            query = (
+                '("Künstliche Intelligenz" OR "KI" OR ChatGPT)'
+                ' AND (KMU OR "Kleine Unternehmen" OR Mittelstand'
+                ' OR "Mittlere Unternehmen" OR "Kleinstunternehmen")'
+                ' NOT "KI-Newsletter"'
+            )
             articles = newsapi.get_everything(
-                q='("Künstliche Intelligenz" OR "KI-" OR ChatGPT) and (KMU) OR "Kleine Unternehmen" OR Mittelstand OR "Mittlere Unternehmen" OR "Kleinst-unternehmen") AND NOT "KI-Newsletter"',
+                q=query,
                 language='de',
                 sort_by='relevancy',
                 page_size=1,

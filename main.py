@@ -46,7 +46,8 @@ class NewsCollector:
     SOURCES = [
         'faz.net', 'sueddeutsche.de', 'zeit.de', 'welt.de', 'handelsblatt.com',
         'heise.de', 'golem.de', 't3n.de', 'spiegel.de', 'focus.de',
-        'tagesschau.de', 'stern.de', 'wiwo.de', 'manager-magazin.de']
+        'tagesschau.de', 'stern.de', 'wiwo.de', 'manager-magazin.de'
+    ]
 
     @staticmethod
     def get_recent_news() -> List[Dict]:
@@ -59,7 +60,7 @@ class NewsCollector:
                 break
 
             articles = newsapi.get_everything(
-                q='("Künstliche Intelligenz" OR "KI-" OR ChatGPT) and (KMU) OR "Kleine Unternehmen" OR Mittelstand OR "Mittlere Unternehmen" OR "Kleinst-unternehmen") AND NOT "KI-Newsletter"',
+                q='("Künstliche Intelligenz" OR "KI-" OR ChatGPT) and (KMU OR "Kleine Unternehmen" OR Mittelstand OR "Mittlere Unternehmen" OR "Kleinst-unternehmen") AND NOT "KI-Newsletter"',
                 language='de',
                 sort_by='relevancy',
                 page_size=1,

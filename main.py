@@ -321,6 +321,7 @@ async def initialize():
     check_environment()
     application = Application.builder().token(Config.TELEGRAM_BOT_TOKEN).build()
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_selection))
+    await application.initialize()
     await main()
     await application.start()
     await application.run_polling()

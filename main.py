@@ -317,10 +317,13 @@ async def main():
         print(f"Error: {str(e)}")
         sys.exit(1)
 
-if __name__ == '__main__':
+async def initialize():
     check_environment()
     application = Application.builder().token(Config.TELEGRAM_BOT_TOKEN).build()
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_selection))
+    await main()
+    await application.start()
+    await application.run_polling()
 
-    asyncio.get_event_loop().create_task(main())
-    application.run_polling()
+if __name__ == '__main__':
+    asyncio.run(initialize())

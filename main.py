@@ -298,9 +298,15 @@ async def handle_selection(update, context):
             )
             print("Script will end in 1 minute...")
             await asyncio.sleep(60)  # Wait for 1 minute
-            await application.stop()
-            await application.shutdown()
-            sys.exit(0)
+            try:
+                app = context.application
+                await app.stop()
+                await app.shutdown()
+                await app.bot.close()
+            except Exception as e:
+                print(f"Shutdown error: {e}")
+            finally:
+                sys.exit(0)
         else:
             await update.message.reply_text("Please select a number between 1 and 3.")
     except (ValueError, IndexError):

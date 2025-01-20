@@ -333,16 +333,20 @@ async def initialize():
         await application.initialize()
         await application.start()
         print("Bot is running...")
-        await application.run_polling(allowed_updates=["message"])
+        await application.run_polling(allowed_updates=["message"], close_loop=False)
     except Exception as e:
         print(f"Error during execution: {e}")
     finally:
         print("Shutting down...")
-        await application.stop()
-        await application.shutdown()
+        try:
+            if application.running:
+                await application.stop()
+                await application.shutdown()
+        except Exception as e:
+            print(f"Error during shutdown: {e}")
 
 if __name__ == '__main__':
     try:
-        asyncio.run(initialize())
+        asyncio.run(initialize(), debug=True)
     except KeyboardInterrupt:
         print("Bot stopped gracefully")

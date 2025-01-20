@@ -329,13 +329,20 @@ async def initialize():
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_selection))
     
     try:
+        await main()
         await application.initialize()
         await application.start()
-        await main()
-        await application.run_polling(drop_pending_updates=True)
+        print("Bot is running...")
+        await application.run_polling(allowed_updates=["message"])
     except Exception as e:
         print(f"Error during execution: {e}")
-        raise e
+    finally:
+        print("Shutting down...")
+        await application.stop()
+        await application.shutdown()
 
 if __name__ == '__main__':
-    asyncio.run(initialize())
+    try:
+        asyncio.run(initialize())
+    except KeyboardInterrupt:
+        print("Bot stopped gracefully")

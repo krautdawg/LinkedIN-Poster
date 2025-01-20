@@ -46,8 +46,7 @@ class NewsCollector:
     SOURCES = [
         'faz.net', 'sueddeutsche.de', 'zeit.de', 'welt.de', 'handelsblatt.com',
         'heise.de', 'golem.de', 't3n.de', 'spiegel.de', 'focus.de',
-        'tagesschau.de', 'stern.de', 'wiwo.de', 'manager-magazin.de'
-    ]
+        'tagesschau.de', 'stern.de', 'wiwo.de', 'manager-magazin.de']
 
     @staticmethod
     def get_recent_news() -> List[Dict]:
@@ -60,7 +59,7 @@ class NewsCollector:
                 break
 
             articles = newsapi.get_everything(
-                q='("Künstliche Intelligenz" OR "KI-" OR ChatGPT) and (KMU OR "Kleine Unternehmen" OR Mittelstand OR "Mittlere Unternehmen" OR "Kleinst-unternehmen") AND NOT "KI-Newsletter"',
+                q='("Künstliche Intelligenz" OR "KI-" OR ChatGPT) and (KMU) OR "Kleine Unternehmen" OR Mittelstand OR "Mittlere Unternehmen" OR "Kleinst-unternehmen") AND NOT "KI-Newsletter"',
                 language='de',
                 sort_by='relevancy',
                 page_size=1,
@@ -298,15 +297,9 @@ async def handle_selection(update, context):
             )
             print("Script will end in 1 minute...")
             await asyncio.sleep(60)  # Wait for 1 minute
-            try:
-                app = context.application
-                await app.stop()
-                await app.shutdown()
-                await app.bot.close()
-            except Exception as e:
-                print(f"Shutdown error: {e}")
-            finally:
-                sys.exit(0)
+            await application.stop()
+            await application.shutdown()
+            sys.exit(0)
         else:
             await update.message.reply_text("Please select a number between 1 and 3.")
     except (ValueError, IndexError):
@@ -323,23 +316,10 @@ async def main():
         print(f"Error: {str(e)}")
         sys.exit(1)
 
-async def initialize():
+if __name__ == '__main__':
     check_environment()
     application = Application.builder().token(Config.TELEGRAM_BOT_TOKEN).build()
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_selection))
-    
-    try:
-        await main()
-        print("Bot is running...")
-        await application.initialize()
-        await application.start()
-        await application.updater.start_polling()
-        await application.updater.stop()
-    except Exception as e:
-        print(f"Error during execution: {e}")
-    finally:
-        await application.stop()
-        await application.shutdown()
 
-if __name__ == '__main__':
-    asyncio.run(initialize())
+    asyncio.get_event_loop().create_task(main())
+    application.run_polling()

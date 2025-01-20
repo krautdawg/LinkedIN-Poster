@@ -327,10 +327,20 @@ async def initialize():
     check_environment()
     application = Application.builder().token(Config.TELEGRAM_BOT_TOKEN).build()
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_selection))
-    await application.initialize()
-    await main()
-    await application.start()
-    await application.run_polling()
+    
+    try:
+        await main()
+        await application.initialize()
+        await application.start()
+        await application.run_polling(close_loop=False)
+    except Exception as e:
+        print(f"Error during execution: {e}")
+    finally:
+        try:
+            await application.stop()
+            await application.shutdown()
+        except Exception as e:
+            print(f"Error during shutdown: {e}")
 
 if __name__ == '__main__':
     asyncio.run(initialize())

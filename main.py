@@ -329,6 +329,7 @@ if __name__ == '__main__':
 
     async def start_bot():
         await main()
+        await application.initialize()
         await application.start()
         await application.updater.start_polling()
         await application.updater.idle()

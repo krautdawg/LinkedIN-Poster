@@ -4,7 +4,6 @@ import json
 import logging
 import os
 import sys
-import signal
 from typing import Dict, List
 
 import openai
@@ -329,27 +328,9 @@ if __name__ == '__main__':
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_selection))
 
     async def start_bot():
-        try:
-            await main()
-            await application.start()
-            await application.updater.start_polling()
-            
-            # Set up signal handlers
-            stop = asyncio.Future()
-            
-            def signal_handler():
-                stop.set_result(None)
-            
-            application.updater.stop_signals = None
-            for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGABRT):
-                application.job_queue.loop.add_signal_handler(
-                    sig,
-                    signal_handler
-                )
-            
-            await stop
-        finally:
-            await application.stop()
-            await application.updater.stop()
+        await main()
+        await application.start()
+        await application.updater.start_polling()
+        await application.updater.idle()
 
     asyncio.run(start_bot())

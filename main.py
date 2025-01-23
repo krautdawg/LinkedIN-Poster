@@ -327,5 +327,10 @@ if __name__ == '__main__':
     application = Application.builder().token(Config.TELEGRAM_BOT_TOKEN).build()
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_selection))
 
-    asyncio.get_event_loop().create_task(main())
-    application.run_polling()
+    async def start_bot():
+        await main()
+        await application.start()
+        await application.updater.start_polling()
+        await application.updater.idle()
+
+    asyncio.run(start_bot())

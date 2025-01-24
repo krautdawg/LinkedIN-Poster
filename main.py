@@ -301,8 +301,8 @@ async def handle_selection(update, context):
                 chat_id=Config.TELEGRAM_CHAT_ID,
                 text=status_message
             )
-            print("Script will end in 1 minute...")
-            await asyncio.sleep(60)  # Wait for 1 minute
+            print("Script will continue running for 4 hours...")
+            await asyncio.sleep(14400)  # Wait for 4 hours
             await application.stop()
             await application.shutdown()
             sys.exit(0)

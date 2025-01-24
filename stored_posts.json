@@ -1,24 +1,8 @@
 {
   "posts": [
     {
-      "content": "Hey LinkedIn-Community! 💡 Die KI-Revolution rollt und Deutschland hat noch Chancen, vorn mitzumischen. Für kleine und mittelständische Unternehmen bedeutet das: Jetzt aktiv werden! Setze auf KI, um Prozesse zu optimieren und Wettbewerbsvorteile zu sichern. Dabei ist es wichtig, nicht nur auf die großen Player zu schauen, sondern eigene, maßgeschneiderte Lösungen zu entwickeln. Lass uns gemeinsam die Ärmel hochkrempeln und die digitale Zukunft gestalten. 🚀 \n\n#KünstlicheIntelligenz #Mittelstand",
-      "sourceUrl": "https://www.faz.net/aktuell/wirtschaft/kuenstliche-intelligenz/worum-es-in-der-ki-jetzt-geht-deutschland-hat-noch-chancen-110230593.html",
-      "sentiment": {
-        "rating": 3,
-        "confidence": 0.5
-      }
-    },
-    {
-      "content": "Interessanter Einblick in die Herausforderungen einer Übernahme: Der Einstieg von Unicredit bei der Commerzbank zeigt, wie komplex solche Prozesse sind. Ein schlechter Start kann langfristige Folgen haben. Für kleine und mittlere Unternehmen bedeutet das: Strategie ist entscheidend! KI kann hier unterstützen, indem sie Risiken analysiert und fundierte Entscheidungen ermöglicht. Nutze die Power der Digitalisierung für bessere Ergebnisse und vermeide die Stolperfallen großer Übernahmen. #DigitaleStrategie",
-      "sourceUrl": "https://www.sueddeutsche.de/wirtschaft/unicredit-weidmann-kritik-commerzbank-li.3181666",
-      "sentiment": {
-        "rating": 3,
-        "confidence": 0.5
-      }
-    },
-    {
-      "content": "Hey, hast Du schon von dem neuen Förderprogramm „Digital-Invest“ im Saarland gehört? Eine großartige Chance für kleine und mittelständische Unternehmen, um in digitale Technologien zu investieren, insbesondere in Künstliche Intelligenz! Stell Dir vor, Deine Prozesse zu automatisieren und effizienter zu gestalten – und das mit finanzieller Unterstützung. Es ist an der Zeit, die Digitalisierung in Deinem Unternehmen voranzutreiben und wettbewerbsfähiger zu werden. Lass uns über Möglichkeiten sprechen, wie wir diese Unterstützung optimal nutzen können, um Dein Business zu transformieren. #DigitalInvest",
-      "sourceUrl": "https://www.zeit.de/news/2025-01/14/saarland-legt-foerderprogramm-fuer-mittelstand-auf",
+      "content": "Künstliche Intelligenz steht erst am Anfang, aber die Möglichkeiten für kleine und mittlere Unternehmen sind bereits riesig! Der Experte Björn Ommer sieht spannende Chancen: Von automatisierten Kundenservice-Lösungen bis hin zu personalisierten Marketingstrategien. Stell Dir vor, Deine Geschäftsprozesse effizienter zu gestalten und gleichzeitig die Kundenzufriedenheit zu steigern – alles mit KI. Jetzt ist der perfekte Zeitpunkt, um auf den Zug aufzuspringen und Deine Wettbewerbsfähigkeit zu sichern. Bist Du bereit, die Zukunft Deines Unternehmens mit KI zu gestalten? #KünstlicheIntelligenz #Mittelstand #Innovation #Geschäftsentwicklung",
+      "sourceUrl": "https://www.stern.de/digital/kuenstliche-intelligenz--experte--stehen-erst-am-beginn-der-ki-entwicklung-35386496.html",
       "sentiment": {
         "rating": 3,
         "confidence": 0.5

@@ -104,7 +104,7 @@ class ContentGenerator:
         response = openai.chat.completions.create(
             model="gpt-4o",
             messages=[
-                {"role": "system", "content": "You are a humble consultant for small and medium sized businesses figuring out how to use AI applications for his clients. Please write a smart sounding German post for LinkedIN using the informal Du about this article. Write in a straightforward, professional tone that is approachable, humble and authentic. Balance insights and value for the reader with a witty style that feels relatable and grounded.  When appropriate incorporate elements of tech-savvy language with a focus on practical applications, especially in Artificial Intelligence and digitization for small and medium sized businesses. Keep the message concise to maximum 100 words. use no or at most 1 KIude relevant hashtags."},
+                {"role": "system", "content": "Imagine you're a consultant helping small and medium-sized businesses leverage AI. Craft a concise, engaging LinkedIn post in German (using 'Du') about this article. Your tone should be professional yet friendly, offering valuable insights with a touch of wit. Highlight practical KI applications for businesses, keeping it under 100 words. Use no emojis and include appropriate hashtags.."},
                 {"role": "user", "content": content}
             ],
             temperature=0.7

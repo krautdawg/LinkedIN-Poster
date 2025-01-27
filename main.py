@@ -322,10 +322,17 @@ async def main():
         print(f"Error: {str(e)}")
         sys.exit(1)
 
+async def start_bot():
+    """Start the bot and keep it running"""
+    await main()
+    print("Bot is running and waiting for your selection...")
+    await application.start()
+    await application.updater.start_polling()
+    await application.updater.idle()
+
 if __name__ == '__main__':
     check_environment()
     application = Application.builder().token(Config.TELEGRAM_BOT_TOKEN).build()
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_selection))
-
-    asyncio.get_event_loop().create_task(main())
-    application.run_polling()
+    
+    asyncio.run(start_bot())

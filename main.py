@@ -24,15 +24,13 @@ class Config:
     TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
     LINKEDIN_ACCESS_TOKEN = os.environ.get('LINKEDIN_ACCESS_TOKEN')
     LINKEDIN_MEMBER_ID = os.environ.get('LINKEDIN_MEMBER_ID')
-    UNDETECTABLE_API_KEY = os.environ.get('UNDETECTABLE_API_KEY')
-
-# Initialize APIs
+    # Initialize APIs
 openai.api_key = Config.OPENAI_API_KEY
 newsapi = NewsApiClient(api_key=Config.NEWS_API_KEY)
 
 def check_environment():
     """Verify all required environment variables are set"""
-    if not all([Config.OPENAI_API_KEY, Config.NEWS_API_KEY, Config.TELEGRAM_BOT_TOKEN, Config.TELEGRAM_CHAT_ID, Config.UNDETECTABLE_API_KEY]):
+    if not all([Config.OPENAI_API_KEY, Config.NEWS_API_KEY, Config.TELEGRAM_BOT_TOKEN, Config.TELEGRAM_CHAT_ID]):
         sys.stderr.write("""
         Missing required keys. Please set:
         - OPENAI_API_KEY
@@ -100,42 +98,17 @@ class ContentGenerator:
         return {"posts": posts}
 
     @staticmethod
-    def _humanize_text(text: str) -> str:
-        """Humanize text using Undetectable AI API"""
-        url = "https://api.undetectable.ai/humanize/v1/proxy"
-        headers = {
-            "accept": "application/json",
-            "content-type": "application/json",
-            "authorization": f"Bearer {os.environ.get('UNDETECTABLE_API_KEY')}"
-        }
-        data = {
-            "text": text,
-            "target_language": "de",  # German
-            "tone": "professional",
-            "creativity": 0.7
-        }
-        
-        try:
-            response = requests.post(url, json=data, headers=headers)
-            response.raise_for_status()
-            return response.json()['humanized']
-        except Exception as e:
-            print(f"Error humanizing text: {str(e)}")
-            return text  # Return original text if humanization fails
-
-    @staticmethod
     def _generate_post_content(content: str) -> str:
-        """Generate and humanize LinkedIn post content"""
+        """Generate LinkedIn post content"""
         response = openai.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4",
             messages=[
                 {"role": "system", "content": "Imagine you're a consultant helping small and medium-sized businesses leverage AI. Craft a concise, engaging LinkedIn post in German (using 'Du') about this article. Your tone should be professional yet friendly, offering valuable insights with a touch of wit. Highlight practical KI applications for businesses, keeping it under 100 words. Use no emojis and include appropriate hashtags.."},
                 {"role": "user", "content": content}
             ],
             temperature=0.7
         )
-        generated_content = response.choices[0].message.content
-        return ContentGenerator._humanize_text(generated_content)
+        return response.choices[0].message.content
 
     @staticmethod
     def _analyze_sentiment(content: str) -> Dict:

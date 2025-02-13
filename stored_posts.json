@@ -1,24 +1,16 @@
 {
   "posts": [
     {
-      "content": "Künstliche Intelligenz bietet Unternehmen zahlreiche Möglichkeiten – und Deepseek könnte ein echter Game-Changer sein. Antonio Krüger vom DFKI erklärt, wie KI-Systeme effizienter denken und Ressourcen schonen. Was bedeutet das für Dein Unternehmen? Weniger Rechenzentren, mehr Effizienz! Ob automatisierte Kundendienste, personalisierte Marketingstrategien oder optimierte Lieferketten – die Anwendungen sind vielfältig. Nutze die Chance, um Deine Prozesse zu optimieren und der Konkurrenz einen Schritt voraus zu sein. #KünstlicheIntelligenz #Deepseek #Unternehmertum #Innovation #Effizienzsteigerung",
-      "sourceUrl": "https://www.faz.net/aktuell/wirtschaft/kuenstliche-intelligenz/ist-deepseek-wirklich-ein-durchbruch-herr-krueger-110264634.html",
+      "content": "Die EU hat große Ambitionen in der KI, doch Überregulierung könnte die Innovationen bremsen. Was bedeutet das für Dein Unternehmen? Nutze KI, um Prozesse zu optimieren und Kunden besser zu verstehen, ohne Dich in Bürokratie zu verlieren. Von automatisierten Kundenservices bis hin zur Datenanalyse – die Möglichkeiten sind vielfältig. Lass Dich nicht von Vorschriften abschrecken, sondern finde kreative Wege, KI gewinnbringend einzusetzen. #KI #Innovation #Digitalisierung #KMU #Europa",
+      "sourceUrl": "https://www.faz.net/pro/digitalwirtschaft/kuenstliche-intelligenz/ki-in-europa-ueberregulierung-legt-die-innovation-in-ketten-110290390.html",
       "sentiment": {
         "rating": 3,
         "confidence": 0.5
       }
     },
     {
-      "content": "In Zeiten des Wandels muss sich die deutsche Wirtschaft neu erfinden. Hier kommt KI ins Spiel – ein echter Gamechanger! Ob automatisierte Prozesse, präzise Datenanalysen oder personalisierte Kundenansprache, KI bietet praktische Lösungen für Unternehmen jeder Größe. Stell dir vor, du könntest mit weniger Aufwand mehr erreichen und dabei noch innovative Produkte entwickeln! Es ist Zeit, die Stagnation zu stoppen und das volle Potenzial der KI zu nutzen. Brauchst du Unterstützung, um den ersten Schritt zu machen? Lass uns reden. #KünstlicheIntelligenz #Innovation #WirtschaftsWandel #Mittelstand",
-      "sourceUrl": "https://www.sueddeutsche.de/wirtschaft/wirtschaft-analyse-li.3190966",
-      "sentiment": {
-        "rating": 3,
-        "confidence": 0.5
-      }
-    },
-    {
-      "content": "Die EU-Kommission plant Bürokratieabbau, um Unternehmen das Leben zu erleichtern. Eine perfekte Gelegenheit, KI ins Spiel zu bringen! Ob automatisierte Dokumentenverwaltung oder intelligente Datenanalyse – KI kann helfen, den Verwaltungsaufwand zu minimieren und gleichzeitig die Effizienz zu steigern. Stell Dir vor: weniger Zeit mit Papierkram, mehr Fokus auf Innovation und Wachstum. Nutze die Vereinfachung der Vorschriften als Sprungbrett für KI-Implementierung in Deinem Geschäft. Bist Du bereit, die Zukunft zu gestalten? #KI #Bürokratieabbau #Innovation #Unternehmen #Effizienzsteigerung",
-      "sourceUrl": "https://www.zeit.de/wirtschaft/buerokratieabbau-eu-kommission-ursula-von-der-leyen-unternehmen",
+      "content": "In einer Welt voller politischer Ansprüche und Wahlkampfversprechen können Unternehmen KI nutzen, um sich einen Wettbewerbsvorteil zu sichern. Ob Du Kundenerlebnisse personalisierst, Prozesse automatisierst oder Marktforschung optimierst – KI hat das Potenzial, Dein Geschäft zu transformieren. Während die CSU über Ministerien diskutiert, solltest Du über Deine nächste KI-Strategie nachdenken. Bereit, Deine Geschäftsprozesse auf das nächste Level zu heben? #KünstlicheIntelligenz #Innovation #Mittelstand #Digitalisierung",
+      "sourceUrl": "https://www.welt.de/politik/deutschland/article255384862/Bundestagswahl-Von-enormer-Bedeutung-CSU-meldet-erste-Ministeriumsansprueche-an-Liveticker.html",
       "sentiment": {
         "rating": 3,
         "confidence": 0.5

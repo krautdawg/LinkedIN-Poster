@@ -323,12 +323,17 @@ async def main():
 
 async def start_bot():
     """Start the bot and keep it running"""
-    await main()
-    print("Bot is running and waiting for your selection...")
-    await application.initialize()
-    await application.start()
-    await application.updater.start_polling()
-    await application.updater.idle()
+    try:
+        await main()
+        print("Bot is running and waiting for your selection...")
+        await application.initialize()
+        await application.start()
+        await application.updater.start_polling(drop_pending_updates=True)
+        await application.updater.idle()
+    except Exception as e:
+        print(f"Error in start_bot: {str(e)}")
+        await application.stop()
+        await application.shutdown()
 
 if __name__ == '__main__':
     check_environment()

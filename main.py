@@ -329,11 +329,13 @@ async def start_bot():
         await application.initialize()
         await application.start()
         await application.updater.start_polling(drop_pending_updates=True)
-        await application.updater.idle()
+        # Use application.running() instead of updater.idle()
+        await application.running()
     except Exception as e:
         print(f"Error in start_bot: {str(e)}")
+        if application.updater.running:
+            await application.updater.stop()
         await application.stop()
-        await application.shutdown()
 
 if __name__ == '__main__':
     check_environment()

@@ -101,7 +101,7 @@ class ContentGenerator:
     def _generate_post_content(content: str) -> str:
         """Generate LinkedIn post content"""
         response = openai.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4.5-preview",
             messages=[
                 {"role": "system", "content": "Imagine, du bist Berater:in für kleine und mittlere Unternehmen, die KI nutzen möchten, um effizienter und erfolgreicher zu werden. Verfasse einen kurzen, authentischen LinkedIn-Post auf Deutsch (Du-Form) zu diesem Artikel. Der Tonfall sollte professionell und zugleich sympathisch sein. Gib praktische Tipps, wie KMU KI konkret einsetzen können, um ihren Arbeitsalltag leichter zu machen, und wecke Neugier durch einen charmanten, leicht humorvollen Stil. Bleib unter 100 Wörtern, verzichte auf Emojis und nutze passende Hashtags."},
                 {"role": "user", "content": content}

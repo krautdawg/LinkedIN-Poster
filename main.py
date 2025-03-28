@@ -88,12 +88,9 @@ class ContentGenerator:
         for article in articles:
             content = f"Article: {article['title']}\nURL: {article['url']}\nDescription: {article['description']}"
             post_content = ContentGenerator._generate_post_content(content)
-            sentiment = ContentGenerator._analyze_sentiment(content)
-
             posts.append({
                 "content": post_content,
-                "sourceUrl": article['url'],
-                "sentiment": sentiment
+                "sourceUrl": article['url']
             })
         return {"posts": posts}
 
@@ -110,26 +107,7 @@ class ContentGenerator:
         )
         return response.choices[0].message.content
 
-    @staticmethod
-    def _analyze_sentiment(content: str) -> Dict:
-        """Analyze content sentiment using GPT-4"""
-        response = openai.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "Analyze the sentiment of this article. Return only two numbers: rating (1-5, where 5 is most positive) and confidence (0-1)."},
-                {"role": "user", "content": content}
-            ],
-            temperature=0.3
-        )
-
-        try:
-            rating, confidence = map(float, response.choices[0].message.content.split())
-            rating = max(1, min(5, rating))
-            confidence = max(0, min(1, confidence))
-        except:
-            rating, confidence = 3, 0.5
-
-        return {"rating": rating, "confidence": confidence}
+    
 
 class Storage:
     @staticmethod
@@ -161,10 +139,6 @@ class SocialMedia:
 📰 *AI News Update #{i}*
 
 {post['content']}
-
-📊 Sentiment Analysis:
-Rating: {'⭐' * int(post['sentiment']['rating'])} ({post['sentiment']['rating']}/5)
-Confidence: {post['sentiment']['confidence']*100:.1f}%
 
 🔗 Source: {post['sourceUrl']}
 """

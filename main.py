@@ -289,7 +289,7 @@ async def handle_selection(update, context):
             )
             Storage.store_selected_post(selected_post)
 
-            post_content = selected_post['content'].split('\n\n')[0]
+            post_content = selected_post['content']
             # Get title from the source URL
             articles = NewsCollector.get_recent_news()
             title = next((article['title'] for article in articles if article['url'] == selected_post['sourceUrl']), "AI News Article")

@@ -1,16 +1,24 @@
 {
   "posts": [
     {
-      "content": "Suchst Du nach Wegen, Dein KMU mit Künstlicher Intelligenz (KI) zu stärken? Lass Dich nicht von der Überregulierung abschrecken! KI kann Dein Geschäft revolutionieren - von Prozessautomatisierung bis hin zur Kundeninteraktion. Trotz der bürokratischen Hürden ist es Zeit, die Ärmel hochzukrempeln und die Vorteile der KI für Dein Unternehmen zu nutzen. #KI #Innovation #Unternehmen \nArtikel: https://www.faz.net/pro/digitalwirtschaft/kuenstliche-intelligenz/ki-in-europa-ueberregulierung-legt-die-innovation-in-ketten-110290390.html",
-      "sourceUrl": "https://www.faz.net/pro/digitalwirtschaft/kuenstliche-intelligenz/ki-in-europa-ueberregulierung-legt-die-innovation-in-ketten-110290390.html",
+      "content": "Auch KMUs können lernen, den Tiktok-Tanz zu tanzen! Mit Künstlicher Intelligenz lassen sich Kundendaten analysieren, Prozesse optimieren und neue Geschäftsfelder erschließen. Lasst uns diese digitale Chance nutzen und gemeinsam den Arbeitsalltag verschönern. Denn wer sagt, dass Arbeit nicht auch Spaß machen kann? #KMU #KünstlicheIntelligenz #Digitalisierung #Tiktok",
+      "sourceUrl": "https://www.sueddeutsche.de/muenchen/muenchen-tiktok-zentrale-e-commerce-li.3226628",
       "sentiment": {
         "rating": 3,
         "confidence": 0.5
       }
     },
     {
-      "content": "Verpasst Du die KI-Revolution? Kleine und mittlere Unternehmen (KMU) können dank Künstlicher Intelligenz (KI) erhebliche Verbesserungen erzielen. Von Kundenservice bis hin zu effizienterem Betrieb, KI-Anwendungen bieten vielfältige Möglichkeiten. Lass uns gemeinsam herausfinden, wie Dein Unternehmen die Macht der KI nutzen kann. #KünstlicheIntelligenz #KI #Digitalisierung #Innovation #KMU\n",
-      "sourceUrl": "https://www.welt.de/politik/deutschland/article255384862/Bundestagswahl-Von-enormer-Bedeutung-CSU-meldet-erste-Ministeriumsansprueche-an-Liveticker.html",
+      "content": "Es ist Freitag und auch eure KMU könnte von KI profitieren! Ob effizientes Kundenmanagement durch Chatbots oder präzise Vorhersagen durch Datenanalyse, KI ist kein Hexenwerk. Wagt den Sprung und entdeckt, wie euer Arbeitsalltag leichter wird. Und wer weiß, vielleicht wird euer Unternehmen das nächste Tesla (nur ohne Finanzlücke 😉). #KMU #AI #Digitalisierung #Effizienzsteigerung",
+      "sourceUrl": "https://www.heise.de/news/Freitag-Signal-gegen-Entschluesselungsplaene-Gluecksspiele-bei-Internet-Resellern-10323584.html",
+      "sentiment": {
+        "rating": 3,
+        "confidence": 0.5
+      }
+    },
+    {
+      "content": "Liebe KMU's, schwer im Geschäft und keine Zeit für Pause? Wie wäre es, wenn ein KI-Assistent einen Teil dieser Last abnimmt? Von der automatischen Rechnungsstellung bis zum Kundenmanagement, KI kann uns den Arbeitsalltag erleichtern. Neugierig geworden? Einfach mal den inneren Terminator ausschalten und dem charmanten KI-Assistenten eine Chance geben. #KünstlicheIntelligenz #KMU #Effizienzsteigerung",
+      "sourceUrl": "https://t3n.de/news/104-euro-stundensatz-3000-freelancer-befragt-1679201/",
       "sentiment": {
         "rating": 3,
         "confidence": 0.5

@@ -54,14 +54,14 @@ class NewsCollector:
         seven_days_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime('%Y-%m-%d')
 
         for source in NewsCollector.SOURCES:
-            if len(all_articles) >= 3:
+            if len(all_articles) >= 5:
                 break
 
             query = (
                 '("Künstliche Intelligenz" OR "KI" OR ChatGPT)'
                 ' AND (KMU OR "Kleine Unternehmen" OR Mittelstand'
                 ' OR "Mittlere Unternehmen" OR "Kleinstunternehmen")'
-                ' NOT "KI-Newsletter"'
+                ' NOT ("KI-Newsletter" or "ETFs")'
             )
             articles = newsapi.get_everything(
                 q=query,
@@ -103,7 +103,7 @@ class ContentGenerator:
         response = openai.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "Imagine you're a consultant helping small and medium-sized businesses leverage AI. Craft a concise, engaging LinkedIn post in German (using 'Du') about this article. Your tone should be professional yet friendly, offering valuable insights with a touch of wit. Highlight practical KI applications for businesses, keeping it under 100 words. Use no emojis and include appropriate hashtags.."},
+                {"role": "system", "content": "Imagine, du bist Berater:in für kleine und mittlere Unternehmen, die KI nutzen möchten, um effizienter und erfolgreicher zu werden. Verfasse einen kurzen, authentischen LinkedIn-Post auf Deutsch (Du-Form) zu diesem Artikel. Der Tonfall sollte professionell und zugleich sympathisch sein. Gib praktische Tipps, wie KMU KI konkret einsetzen können, um ihren Arbeitsalltag leichter zu machen, und wecke Neugier durch einen charmanten, leicht humorvollen Stil. Bleib unter 100 Wörtern, verzichte auf Emojis und nutze passende Hashtags."},
                 {"role": "user", "content": content}
             ],
             temperature=0.7

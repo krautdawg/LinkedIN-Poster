@@ -78,7 +78,7 @@ class NewsCollector:
             ):
                 all_articles.append(articles['articles'][0])
 
-        return all_articles[:3]
+        return all_articles[:5]
 
 class ContentGenerator:
     @staticmethod
@@ -280,7 +280,7 @@ async def handle_selection(update, context):
 
     try:
         selection = int(update.message.text)
-        if 1 <= selection <= 3:
+        if 1 <= selection <= 5:
             selected_post = SocialMedia.stored_posts['posts'][selection - 1]
             await update.message.reply_text(
                 f"Selected Article {selection}:\n\n"
@@ -305,7 +305,7 @@ async def handle_selection(update, context):
             await application.shutdown()
             sys.exit(0)
         else:
-            await update.message.reply_text("Please select a number between 1 and 3.")
+            await update.message.reply_text("Please select a number between 1 and 5.")
     except (ValueError, IndexError):
         await update.message.reply_text("Please send a number between 1 and 3 to select an article.")
 

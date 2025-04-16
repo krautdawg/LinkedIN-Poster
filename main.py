@@ -130,7 +130,7 @@ class SocialMedia:
         """Send posts to Telegram channel"""
         SocialMedia.stored_posts = posts
         try:
-            bot = Application.builder().token(Config.TELEGRAM_BOT_TOKEN).build()
+            bot = Application.builder().token(Config.TELEGRAM_BOT_TOKEN).connection_pool_size(8).pool_timeout(30.0).connect_timeout(30.0).read_timeout(30.0).write_timeout(30.0).build()
             await bot.initialize()
             Storage.store_posts(posts)
 
@@ -301,7 +301,7 @@ async def start_bot():
         print("Bot is running and waiting for your selection...")
         await application.initialize()
         await application.start()
-        await application.updater.start_polling(drop_pending_updates=True)
+        await application.updater.start_polling(drop_pending_updates=True, timeout=30.0, read_timeout=30.0, write_timeout=30.0)
         while application.running:
             await asyncio.sleep(1)
     except Exception as e:

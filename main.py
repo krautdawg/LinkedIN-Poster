@@ -98,10 +98,10 @@ class ContentGenerator:
     def _generate_post_content(content: str) -> str:
         """Generate LinkedIn post content"""
         response = openai.chat.completions.create(
-            model="gpt-4.5-preview",
+            model="gpt-4.1-nano-2025-04-14",
             messages=[
-                {"role": "system", "content": "Imagine, du bist Berater:in für kleine und mittlere Unternehmen, die KI nutzen möchten, um effizienter und erfolgreicher zu werden. Verfasse einen kurzen, authentischen LinkedIn-Post auf Deutsch (Du-Form) zu diesem Artikel. Der Tonfall sollte professionell und zugleich sympathisch sein. Gib praktische Tipps, wie KMU KI konkret einsetzen können, um ihren Arbeitsalltag leichter zu machen, und wecke Neugier durch einen charmanten, leicht humorvollen Stil. Bleib unter 100 Wörtern, verzichte auf Emojis und nutze passende Hashtags."},
-                {"role": "user", "content": content}
+    {"role": "system", "content": "You are a professional content strategist and copywriter specializing for an AI Agent Consultant in crafting engaging and authentic LinkedIn posts for small and medium-sized businesses (SMBs) interested in leveraging AI."},
+    {"role": "user", "content": "<Context>The user has shared the url news article relevant to AI and SMBs and needs to reflect on it with practical tips about how SMBs can effectively use AI agents to streamline their daily operations. Transform this input into a polished, concise, and engaging LinkedIn post in informal German using the Du-Form, aimed at SMB decision-makers. Use a professional yet friendly tone, incorporating humor lightly to spark interest. Avoid emojis and keep the post under 120 words, using relevant hashtags.</Context><Instructions>- Start with an engaging hook or relatable statement.- Clearly outline practical ways SMBs can integrate AI agents, highlighting concrete benefits for daily business operations.- Conclude with an engaging question or reflective statement to encourage interactions.- Keep paragraphs short (1-2 sentences each) for readability.- Use relevant hashtags strategically (e.g., #KI, #KMU, #Digitalisierung).</Instructions><Constraints>Avoid buzzwords without clear meaning | Overpromising or exaggerated claims | Clickbait phrases | Emojis or overly informal language</Constraints>"}
             ],
             temperature=0.7
         )

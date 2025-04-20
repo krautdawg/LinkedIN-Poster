@@ -26,8 +26,8 @@ class Config:
     LINKEDIN_ACCESS_TOKEN = os.environ.get('LINKEDIN_ACCESS_TOKEN')
     LINKEDIN_MEMBER_ID = os.environ.get('LINKEDIN_MEMBER_ID')
     # Initialize APIs
-    openai.api_key = Config.OPENAI_API_KEY
-    newsapi = NewsApiClient(api_key=Config.NEWS_API_KEY)
+openai.api_key = Config.OPENAI_API_KEY
+newsapi = NewsApiClient(api_key=Config.NEWS_API_KEY)
 
 def check_environment():
     """Verify all required environment variables are set"""
@@ -326,22 +326,12 @@ async def handle_selection(update, context):
 async def main():
     """Main application entry point"""
     try:
-        print("Collecting news articles...")
         articles = NewsCollector.get_recent_news()
-        if not articles:
-            print("No articles found!")
-            return
-        print(f"Found {len(articles)} articles")
-        
-        print("Generating posts...")
         posts = ContentGenerator.create_linkedin_posts(articles)
-        print("Sending to Telegram...")
         await SocialMedia.send_to_telegram(posts)
         print("Successfully sent posts to Telegram")
     except Exception as e:
         print(f"Error: {str(e)}")
-        import traceback
-        print(traceback.format_exc())
         sys.exit(1)
 
 async def start_bot():

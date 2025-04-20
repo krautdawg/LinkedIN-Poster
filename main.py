@@ -42,11 +42,6 @@ def check_environment():
         exit(1)
 
 class NewsCollector:
-    SOURCES = [
-        'faz.net', 'sueddeutsche.de', 'zeit.de', 'welt.de', 'handelsblatt.com',
-        'heise.de', 'golem.de', 't3n.de', 'spiegel.de', 'focus.de',
-        'tagesschau.de', 'stern.de', 'wiwo.de', 'manager-magazin.de']
-
     @staticmethod
     def get_recent_news() -> List[Dict]:
         """Collect recent AI-related news from German sources"""
@@ -61,11 +56,9 @@ class NewsCollector:
         
         print(f"Fetching news with query: {query}")
         print(f"From date: {seven_days_ago}")
-        print(f"Sources: {', '.join(NewsCollector.SOURCES)}")
         
         articles = newsapi.get_everything(
             q=query,
-            domains=','.join(NewsCollector.SOURCES),
             language='de',
             sort_by='relevancy',
             page_size=5,

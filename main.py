@@ -310,6 +310,10 @@ async def main():
     """Main application entry point"""
     try:
         articles = NewsCollector.get_recent_news()
+        if not articles:
+            print("No articles found. Shutting down...")
+            sys.exit(0)
+            
         posts = ContentGenerator.create_linkedin_posts(articles)
         await SocialMedia.send_to_telegram(posts)
         print("Successfully sent posts to Telegram")

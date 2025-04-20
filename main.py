@@ -97,11 +97,19 @@ class ContentGenerator:
     @staticmethod
     def _generate_post_content(content: str) -> str:
         """Generate LinkedIn post content"""
+        # Get previous posts
+        from database import LinkedInPostDB
+        previous_posts = LinkedInPostDB.get_all_posts()
+        previous_content = "\n".join([post["content"] for post in previous_posts.values()])
+        
         response = openai.chat.completions.create(
             model="gpt-4.1-nano-2025-04-14",
             messages=[
-    {"role": "system", "content": "You are a professional content strategist and copywriter specializing for an AI Agent Consultant in crafting engaging and authentic LinkedIn posts for small and medium-sized businesses (SMBs) interested in leveraging AI. Your primary task is to analyze the provided news article (you will receive its URL and description) and create a post that alluded to specific insights from this article"},
-    {"role": "user", "content": f"<Article Content>{content}</Article Content>\n\n<Context>The user has shared the url news article relevant to AI and SMBs and needs to reflect on it with practical tips about how SMBs can effectively use AI agents to streamline their daily operations. Transform this input into a polished, concise, and engaging LinkedIn post in informal German using the Du-Form, aimed at SMB decision-makers. Use a professional yet friendly tone, incorporating humor lightly to spark interest. Avoid emojis and keep the post under 120 words, using relevant hashtags. IMPORTANT: Your response alludes to the content from the provided article URL.</Context><Instructions>-use correct grammatical German - Clearly outline practical ways SMBs can integrate AI agents, highlighting concrete benefits for daily business operations.- Conclude with an engaging question or reflective statement to encourage interactions.- Keep paragraphs short (1-2 sentences each) for readability.- Use relevant hashtags strategically (e.g., #KI, #KMU, #Digitalisierung).</Instructions><Constraints>Avoid buzzwords without clear meaning | Overpromising or exaggerated claims | Clickbait phrases | Emojis or overly informal language</Constraints>"}
+    {"role": "system", "content": "You are a professional content strategist and copywriter specializing for an AI Agent Consultant in crafting engaging and authentic LinkedIn posts for small and medium-sized businesses (SMBs) interested in leveraging AI. Your primary task is to analyze the provided news article and create a unique post that differs from previous posts in style and content while maintaining effectiveness."},
+    {"role": "user", "content": f"<Previous Posts>{previous_content}</Previous Posts>\n<Article Content>{content}</Article Content>\n\n<Context>Create a LinkedIn post about the article that is distinctly different from the previous posts shown above. Transform this input into a polished, concise, and engaging LinkedIn post in informal German using the Du-Form, aimed at SMB decision-makers. Use a professional yet friendly tone, incorporating humor lightly to spark interest. Avoid emojis and keep the post under 120 words, using relevant hashtags.</Context><Instructions>-use correct grammatical German\n-Avoid patterns seen in previous posts\n- Create unique angles and perspectives\n- Clearly outline practical ways SMBs can integrate AI agents\n- Conclude with an engaging question or reflective statement\n- Keep paragraphs short (1-2 sentences each)\n- Use relevant hashtags strategically (e.g., #KI, #KMU, #Digitalisierung)</Instructions><Constraints>Avoid buzzwords without clear meaning | Overpromising or exaggerated claims | Clickbait phrases | Emojis or overly informal language | Patterns from previous posts</Constraints>"}
+            ],
+            temperature=0.8
+        )
             ],
             temperature=0.7
         )

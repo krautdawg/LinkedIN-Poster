@@ -28,3 +28,9 @@ class PostDatabase:
         """Get the most recently stored post"""
         posts = PostDatabase.get_all_posts()
         return posts[-1] if posts else None
+
+    @staticmethod
+    def is_duplicate_article(url: str) -> bool:
+        """Check if an article with this URL has been posted before"""
+        posts = PostDatabase.get_all_posts()
+        return any(post.get('url') == url for post in posts)

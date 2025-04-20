@@ -133,10 +133,13 @@ class SocialMedia:
             await bot.initialize()
             Storage.store_posts(posts)
 
-            print(f"Sending {len(posts['posts'])} posts to Telegram...")
-            for i, post in enumerate(posts['posts'], 1):
-                try:
-                    message = f"""
+            from db_manager import PostDatabase
+        unique_posts = [post for post in posts['posts'] if not PostDatabase.is_duplicate_article(post['sourceUrl'])]
+        print(f"Sending {len(unique_posts)} unique posts to Telegram...")
+        
+        for i, post in enumerate(unique_posts, 1):
+            try:
+                message = f"""
 📰 *AI News Update #{i}*
 
 {post['content']}

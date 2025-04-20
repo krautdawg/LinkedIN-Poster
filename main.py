@@ -130,27 +130,46 @@ class SocialMedia:
         """Send posts to Telegram channel"""
         SocialMedia.stored_posts = posts
         try:
+            print("Starting Telegram bot...")
             bot = Application.builder().token(Config.TELEGRAM_BOT_TOKEN).connection_pool_size(8).pool_timeout(30.0).connect_timeout(30.0).read_timeout(30.0).write_timeout(30.0).build()
+            
+            print("Initializing bot...")
             await bot.initialize()
             Storage.store_posts(posts)
 
+            print(f"Sending {len(posts['posts'])} posts to Telegram...")
             for i, post in enumerate(posts['posts'], 1):
-                message = f"""
+                try:
+                    message = f"""
 📰 *AI News Update #{i}*
 
 {post['content']}
 
 🔗 Source: {post['sourceUrl']}
 """
-                await bot.bot.send_message(
-                    chat_id=Config.TELEGRAM_CHAT_ID,
-                    text=message,
-                    parse_mode='Markdown'
-                )
+                    print(f"Sending post {i}...")
+                    await bot.bot.send_message(
+                        chat_id=Config.TELEGRAM_CHAT_ID,
+                        text=message,
+                        parse_mode='Markdown',
+                        disable_web_page_preview=True
+                    )
+                    print(f"Post {i} sent successfully")
+                except Exception as post_error:
+                    print(f"Error sending post {i}: {str(post_error)}")
+                    continue
+            
+            print("All posts processed. Shutting down bot...")
             await bot.shutdown()
 
         except Exception as e:
-            print(f"Error sending to Telegram: {str(e)}")
+            print(f"Critical error sending to Telegram: {str(e)}")
+            if "chat not found" in str(e).lower():
+                print(f"Please check if the TELEGRAM_CHAT_ID ({Config.TELEGRAM_CHAT_ID}) is correct")
+            elif "unauthorized" in str(e).lower():
+                print(f"Please check if the TELEGRAM_BOT_TOKEN is correct")
+            else:
+                print("Please check your Telegram configuration")
             sys.exit(1)
 
     @staticmethod

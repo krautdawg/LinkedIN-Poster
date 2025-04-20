@@ -50,9 +50,7 @@ class NewsCollector:
         query = (
             '("Künstliche Intelligenz" OR "KI" OR ChatGPT)'
             ' AND Agenten'
-            ' AND (KMU OR "Kleine Unternehmen" OR Mittelstand'
-            ' OR "Mittlere Unternehmen" OR "Kleinstunternehmen")'
-            ' NOT ("KI-Newsletter" or "ETFs")'
+            ' NOT ("KI-Newsletter" OR "ETFs" OR "OMR")'
         )
         
         print(f"Fetching news with query: {query}")

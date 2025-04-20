@@ -6,7 +6,6 @@ hidden = [".pythonlibs"]
 
 [nix]
 channel = "stable-23_05"
-packages = ["gdb"]
 
 [deployment]
 run = ["python3", "main.py"]

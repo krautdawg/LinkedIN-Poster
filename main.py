@@ -285,6 +285,14 @@ async def handle_selection(update, context):
             articles = NewsCollector.get_recent_news()
             title = next((article['title'] for article in articles if article['url'] == selected_post['sourceUrl']), "AI News Article")
             success = await SocialMedia.post_to_linkedin(post_content, selected_post['sourceUrl'], title)
+            if success:
+                from db_manager import PostDatabase
+                PostDatabase.store_post({
+                    "content": post_content,
+                    "url": selected_post['sourceUrl'],
+                    "title": title,
+                    "platform": "linkedin"
+                })
             status_message = "Successfully posted to LinkedIn!" if success else "Failed to post to LinkedIn. Please check the logs."
             print(status_message)
             await context.bot.send_message(

@@ -134,12 +134,12 @@ class SocialMedia:
             Storage.store_posts(posts)
 
             from db_manager import PostDatabase
-        unique_posts = [post for post in posts['posts'] if not PostDatabase.is_duplicate_article(post['sourceUrl'])]
-        print(f"Sending {len(unique_posts)} unique posts to Telegram...")
-        
-        for i, post in enumerate(unique_posts, 1):
-            try:
-                message = f"""
+            unique_posts = [post for post in posts['posts'] if not PostDatabase.is_duplicate_article(post['sourceUrl'])]
+            print(f"Sending {len(unique_posts)} unique posts to Telegram...")
+            
+            for i, post in enumerate(unique_posts, 1):
+                try:
+                    message = f"""
 📰 *AI News Update #{i}*
 
 {post['content']}
@@ -344,5 +344,9 @@ if __name__ == '__main__':
     check_environment()
     application = Application.builder().token(Config.TELEGRAM_BOT_TOKEN).build()
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_selection))
-    
-    asyncio.run(start_bot())
+    try:
+        asyncio.run(start_bot())
+    except KeyboardInterrupt:
+        print("\nBot stopped by user")
+    except Exception as e:
+        print(f"Error running bot: {str(e)}")

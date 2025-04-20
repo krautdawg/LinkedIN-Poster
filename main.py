@@ -110,9 +110,6 @@ class ContentGenerator:
             ],
             temperature=0.8
         )
-            ],
-            temperature=0.7
-        )
         return response.choices[0].message.content
 
     

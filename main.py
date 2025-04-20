@@ -59,6 +59,10 @@ class NewsCollector:
             ' NOT ("KI-Newsletter" or "ETFs")'
         )
         
+        print(f"Fetching news with query: {query}")
+        print(f"From date: {seven_days_ago}")
+        print(f"Sources: {', '.join(NewsCollector.SOURCES)}")
+        
         articles = newsapi.get_everything(
             q=query,
             domains=','.join(NewsCollector.SOURCES),
@@ -67,6 +71,16 @@ class NewsCollector:
             page_size=5,
             from_param=seven_days_ago
         )
+        
+        print(f"Total articles found: {len(articles['articles'])}")
+        if len(articles['articles']) > 0:
+            print("\nFirst article preview:")
+            first = articles['articles'][0]
+            print(f"Title: {first.get('title')}")
+            print(f"Source: {first.get('url')}")
+            print(f"Published: {first.get('publishedAt')}")
+        else:
+            print("No articles found!")
         
         return articles['articles'][:5]
 

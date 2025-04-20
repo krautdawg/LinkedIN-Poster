@@ -20,7 +20,6 @@ logging.getLogger("telegram").setLevel(logging.WARNING)
 class Config:
     OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
     NEWS_API_KEY = os.environ.get('NEWS_API_KEY')
-    NEWSDATA_API_KEY = os.environ.get('NEWSDATA_API_KEY')
     TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
     TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
     LINKEDIN_ACCESS_TOKEN = os.environ.get('LINKEDIN_ACCESS_TOKEN')
@@ -53,9 +52,7 @@ class NewsCollector:
         """Collect recent AI-related news from German sources"""
         all_articles = []
         seven_days_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime('%Y-%m-%d')
-        two_days_ago = (datetime.datetime.now() - datetime.timedelta(days=2)).strftime('%Y-%m-%d')
 
-        # NewsAPI sources
         for source in NewsCollector.SOURCES:
             if len(all_articles) >= 5:
                 break
@@ -80,33 +77,6 @@ class NewsCollector:
                 for a in all_articles
             ):
                 all_articles.append(articles['articles'][0])
-
-        # Newsdata.io sources
-        newsdata_url = "https://newsdata.io/api/1/news"
-        params = {
-            'apikey': Config.NEWSDATA_API_KEY,
-            'language': 'de',
-            'country': 'de',
-            'q': '(KI OR "Künstliche Intelligenz" OR ChatGPT) AND (KMU OR Mittelstand)',
-            'from_date': two_days_ago
-        }
-        
-        try:
-            response = requests.get(newsdata_url, params=params)
-            if response.status_code == 200:
-                newsdata_articles = response.json().get('results', [])
-                for article in newsdata_articles:
-                    if len(all_articles) >= 5:
-                        break
-                    if not any(a['url'].split('/')[2] == article['link'].split('/')[2] for a in all_articles):
-                        all_articles.append({
-                            'title': article['title'],
-                            'description': article['description'],
-                            'url': article['link'],
-                            'publishedAt': article['pubDate']
-                        })
-        except Exception as e:
-            print(f"Error fetching from newsdata.io: {str(e)}")
 
         return all_articles[:5]
 
@@ -139,6 +109,9 @@ class ContentGenerator:
     {"role": "user", "content": f"<Previous Posts>{previous_content}</Previous Posts>\n<Article Content>{content}</Article Content>\n\n<Context>Create a LinkedIn post about the article that is distinctly different from the previous posts shown above. Transform this input into a polished, concise, and engaging LinkedIn post in informal German using the Du-Form, aimed at SMB decision-makers. Use a professional yet friendly tone, incorporating humor lightly to spark interest. Avoid emojis and keep the post under 120 words, using relevant hashtags.</Context><Instructions>-use correct grammatical German\n-Avoid patterns seen in previous posts\n- Create unique angles and perspectives\n- Clearly outline practical ways SMBs can integrate AI agents\n- Conclude with an engaging question or reflective statement\n- Keep paragraphs short (1-2 sentences each)\n- Use relevant hashtags strategically (e.g., #KI, #KMU, #Digitalisierung)</Instructions><Constraints>Avoid buzzwords without clear meaning | Overpromising or exaggerated claims | Clickbait phrases | Emojis or overly informal language | Patterns from previous posts</Constraints>"}
             ],
             temperature=0.8
+        )
+            ],
+            temperature=0.7
         )
         return response.choices[0].message.content
 

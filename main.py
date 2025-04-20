@@ -50,35 +50,25 @@ class NewsCollector:
     @staticmethod
     def get_recent_news() -> List[Dict]:
         """Collect recent AI-related news from German sources"""
-        all_articles = []
         seven_days_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime('%Y-%m-%d')
-
-        for source in NewsCollector.SOURCES:
-            if len(all_articles) >= 5:
-                break
-
-            query = (
-                '("Künstliche Intelligenz" OR "KI" OR ChatGPT)'
-                ' AND (KMU OR "Kleine Unternehmen" OR Mittelstand'
-                ' OR "Mittlere Unternehmen" OR "Kleinstunternehmen")'
-                ' NOT ("KI-Newsletter" or "ETFs")'
-            )
-            articles = newsapi.get_everything(
-                q=query,
-                language='de',
-                sort_by='relevancy',
-                page_size=1,
-                domains=source,
-                from_param=seven_days_ago
-            )
-
-            if articles['articles'] and not any(
-                a['url'].split('/')[2] == articles['articles'][0]['url'].split('/')[2] 
-                for a in all_articles
-            ):
-                all_articles.append(articles['articles'][0])
-
-        return all_articles[:5]
+        
+        query = (
+            '("Künstliche Intelligenz" OR "KI" OR ChatGPT)'
+            ' AND (KMU OR "Kleine Unternehmen" OR Mittelstand'
+            ' OR "Mittlere Unternehmen" OR "Kleinstunternehmen")'
+            ' NOT ("KI-Newsletter" or "ETFs")'
+        )
+        
+        articles = newsapi.get_everything(
+            q=query,
+            domains=','.join(NewsCollector.SOURCES),
+            language='de',
+            sort_by='relevancy',
+            page_size=5,
+            from_param=seven_days_ago
+        )
+        
+        return articles['articles'][:5]
 
 class ContentGenerator:
     @staticmethod

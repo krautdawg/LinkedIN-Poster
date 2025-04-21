@@ -331,15 +331,13 @@ async def main():
 async def start_bot():
     """Start the bot and keep it running"""
     try:
-        print("Starting bot...")
-        application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_selection))
         await main()
         print("Bot is running and waiting for your selection...")
         await application.initialize()
         await application.start()
-        await application.updater.start_polling(drop_pending_updates=True)
-        print("Bot is now polling for messages...")
-        await application.updater.running
+        await application.updater.start_polling(drop_pending_updates=True, timeout=30.0, read_timeout=30.0, write_timeout=30.0)
+        while application.running:
+            await asyncio.sleep(1)
     except Exception as e:
         print(f"Error in start_bot: {str(e)}")
         if application.updater and application.updater.running:
@@ -348,12 +346,15 @@ async def start_bot():
 
 if __name__ == '__main__':
     check_environment()
-    application = Application.builder().token(Config.TELEGRAM_BOT_TOKEN).connection_pool_size(8).pool_timeout(30.0).connect_timeout(30.0).read_timeout(30.0).write_timeout(30.0).build()
+    application = Application.builder().token(Config.TELEGRAM_BOT_TOKEN).build()
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_selection))
     try:
+        print("Starting bot...")
         asyncio.run(start_bot())
+        # Keep the script running
+        while True:
+            asyncio.sleep(1)
     except KeyboardInterrupt:
         print("\nBot stopped by user")
     except Exception as e:
         print(f"Error running bot: {str(e)}")
-        import traceback
-        traceback.print_exc()

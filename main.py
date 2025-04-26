@@ -351,7 +351,13 @@ async def start_bot():
         print("Bot is running and waiting for your selection...")
         await application.initialize()
         await application.start()
-        await application.updater.start_polling(drop_pending_updates=True, timeout=30.0, read_timeout=30.0, write_timeout=30.0)
+        # Set polling timeout to 12 hours (43200 seconds)
+        await application.updater.start_polling(
+            drop_pending_updates=True,
+            timeout=43200.0,
+            read_timeout=43200.0,
+            write_timeout=30.0
+        )
         while application.running:
             await asyncio.sleep(1)
     except Exception as e:

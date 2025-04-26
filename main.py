@@ -60,21 +60,37 @@ class NewsCollector:
             q=query,
             language='de',
             sort_by='relevancy',
-            page_size=5,
+            page_size=20,  # Increased to have more articles to filter from
             from_param=seven_days_ago
         )
         
-        print(f"Total articles found: {len(articles['articles'])}")
-        if len(articles['articles']) > 0:
+        # Filter articles to have max 2 per domain
+        from urllib.parse import urlparse
+        domain_count = {}
+        filtered_articles = []
+        
+        for article in articles['articles']:
+            domain = urlparse(article['url']).netloc
+            if domain not in domain_count:
+                domain_count[domain] = 0
+            if domain_count[domain] < 2:
+                filtered_articles.append(article)
+                domain_count[domain] += 1
+                
+            if len(filtered_articles) >= 5:
+                break
+                
+        print(f"Total articles found after filtering: {len(filtered_articles)}")
+        if filtered_articles:
             print("\nFirst article preview:")
-            first = articles['articles'][0]
+            first = filtered_articles[0]
             print(f"Title: {first.get('title')}")
             print(f"Source: {first.get('url')}")
             print(f"Published: {first.get('publishedAt')}")
         else:
             print("No articles found!")
         
-        return articles['articles'][:5]
+        return filtered_articles[:5]
 
 class ContentGenerator:
     @staticmethod

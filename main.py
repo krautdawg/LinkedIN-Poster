@@ -72,10 +72,8 @@ class NewsCollector:
         for article in articles['articles']:
             domain = urlparse(article['url']).netloc
             if domain not in domain_count:
-                domain_count[domain] = 0
-            if domain_count[domain] < 2:
                 filtered_articles.append(article)
-                domain_count[domain] += 1
+                domain_count[domain] = 1
                 
             if len(filtered_articles) >= 5:
                 break

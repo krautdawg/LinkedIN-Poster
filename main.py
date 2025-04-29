@@ -109,7 +109,7 @@ class ContentGenerator:
         """Generate LinkedIn post content"""
         from db_manager import PostDatabase
         stored_posts = PostDatabase.get_all_posts()
-        stored_posts_text = "\n\n".join([post.get('content', '') for post in stored_posts[-5:]])  # Last 5 posts
+        stored_posts_text = "\n\n".join([post.get('content', '') for post in stored_posts[-30:]])  # Last 30 posts
         
         response = openai.chat.completions.create(
             model="gpt-4.1-nano-2025-04-14",

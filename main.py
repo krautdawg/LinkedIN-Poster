@@ -45,7 +45,7 @@ class NewsCollector:
     @staticmethod
     def get_recent_news() -> List[Dict]:
         """Collect recent AI-related news from German sources"""
-        seven_days_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime('%Y-%m-%d')
+        one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         
         query = (
             '("Künstliche Intelligenz" OR "KI" OR ChatGPT)'
@@ -54,14 +54,14 @@ class NewsCollector:
         )
         
         print(f"Fetching news with query: {query}")
-        print(f"From date: {seven_days_ago}")
+        print(f"From date: {one_day_ago}")
         
         articles = newsapi.get_everything(
             q=query,
             language='de',
             sort_by='relevancy',
             page_size=20,  # Increased to have more articles to filter from
-            from_param=seven_days_ago
+            from_param=one_day_ago
         )
         
         # Filter articles to have max 2 per domain

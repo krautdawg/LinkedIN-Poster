@@ -157,22 +157,18 @@ class SocialMedia:
             
             for i, post in enumerate(unique_posts, 1):
                 try:
-                    # Escape special markdown characters
-                    content = post['content'].replace('_', '\_').replace('*', '\*').replace('[', '\[').replace('`', '\`')
-                    source_url = post['sourceUrl'].replace('_', '\_').replace('*', '\*').replace('[', '\[').replace('`', '\`')
-                    
                     message = f"""
 📰 *AI News Update #{i}*
 
-{content}
+{post['content']}
 
-🔗 Source: {source_url}
+🔗 Source: {post['sourceUrl']}
 """
                     print(f"Sending post {i}...")
                     await bot.bot.send_message(
                         chat_id=Config.TELEGRAM_CHAT_ID,
                         text=message,
-                        parse_mode='MarkdownV2',
+                        parse_mode='Markdown',
                         disable_web_page_preview=True
                     )
                     print(f"Post {i} sent successfully")

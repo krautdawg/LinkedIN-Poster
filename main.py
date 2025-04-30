@@ -157,12 +157,17 @@ class SocialMedia:
             
             for i, post in enumerate(unique_posts, 1):
                 try:
+                    # Escape all special Markdown characters in content
+                    content = post['content'].replace('_', '\\_').replace('*', '\\*').replace('`', '\\`').replace('[', '\\[').replace(']', '\\]')
+                    # Escape URL special characters
+                    url = post['sourceUrl'].replace('_', '\\_').replace('*', '\\*').replace('`', '\\`').replace('[', '\\[').replace(']', '\\]')
+                    
                     message = f"""
 📰 *AI News Update #{i}*
 
-{post['content']}
+{content}
 
-🔗 Source: {post['sourceUrl']}
+🔗 Source: {url}
 """
                     print(f"Sending post {i}...")
                     await bot.bot.send_message(

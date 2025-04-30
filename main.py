@@ -157,12 +157,10 @@ class SocialMedia:
             
             for i, post in enumerate(unique_posts, 1):
                 try:
-                    # Escape special Markdown characters
-                    escaped_content = post['content'].replace('_', '\\_').replace('*', '\\*').replace('[', '\\[').replace(']', '\\]').replace('`', '\\`')
                     message = f"""
 📰 *AI News Update #{i}*
 
-{escaped_content}
+{post['content']}
 
 🔗 Source: {post['sourceUrl']}
 """

@@ -49,7 +49,7 @@ class NewsCollector:
         
         query = (
             '("Künstliche Intelligenz" OR "KI" OR ChatGPT)'
-            ' NOT ("KI-Newsletter" OR "ETFs" OR "OMR")'
+            ' NOT ("KI-Newsletter" OR "ETFs" OR "OMR" OR "stadt-bremerhaven.de")'
         )
         
         print(f"Fetching news with query: {query}")

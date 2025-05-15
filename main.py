@@ -49,7 +49,6 @@ class NewsCollector:
         
         query = (
             '("Künstliche Intelligenz" OR "KI" OR ChatGPT)'
-            ' AND Agenten'
             ' NOT ("KI-Newsletter" OR "ETFs" OR "OMR")'
         )
         
@@ -75,7 +74,7 @@ class NewsCollector:
                 filtered_articles.append(article)
                 domain_count[domain] = 1
                 
-            if len(filtered_articles) >= 5:
+            if len(filtered_articles) >= 7:
                 break
                 
         print(f"Total articles found after filtering: {len(filtered_articles)}")
@@ -88,7 +87,7 @@ class NewsCollector:
         else:
             print("No articles found!")
         
-        return filtered_articles[:5]
+        return filtered_articles[:7]
 
 class ContentGenerator:
     @staticmethod
@@ -112,12 +111,30 @@ class ContentGenerator:
         stored_posts_text = "\n\n".join([post.get('content', '') for post in stored_posts[-30:]])  # Last 30 posts
         
         response = openai.chat.completions.create(
-            model="gpt-4.1-nano-2025-04-14",
+            model="gpt-4.5-preview",
             messages=[
-    {"role": "system", "content": "You are a professional content strategist and copywriter for an AI Agent Consultant and craft engaging and authentic LinkedIn posts for small and medium-sized businesses (SMBs) interested in leveraging AI. Your primary task is to analyze the provided news article (you will receive its URL and description) and create a post that alludes to the specific insights from this article. The posts needs to sound unique compared to the previous 30 articles"},
-    {"role": "user", "content": f"<Article Content>{content}</Article Content>\n\n<Context>The user has shared the url news article relevant to AI and SMBs and needs to reflect on it with practical tips about how SMBs can effectively use AI agents to streamline their daily operations. Transform this input into a polished, concise, and engaging LinkedIn post in informal German using the Du-Form, aimed at SMB decision-makers. Use a professional yet snarky friendly tone, incorporating humor lightly to spark interest. Avoid emojis and keep the post under 120 words, using relevant hashtags. IMPORTANT: Your response MUST alluded to the content from the provided article URL.</Context><Instructions>- Make it sound unique compared to the last 30 posts- Keep paragraphs short (1-2 sentences each) for readability.- Use relevant hashtags strategically (e.g., #KI, #KMU, #Digitalisierung).</Instructions><Constraints>Avoid buzzwords without clear meaning | Overpromising or exaggerated claims | Clickbait phrases | Emojis or overly informal language</Constraints>"}
+                {
+                    "role": "system",
+                    "content": (
+                        "Du bist professioneller Content‑Stratege & Texter für einen KI‑Agent‑Berater. "
+                        "Deine Posts sind knapp, charmant ironisch‑freundlich (kein Zynismus), inspirieren KMU‑Entscheider, "
+                        "und enthalten KEINE Emojis. Du schreibst informell im Du‑Stil, unter 120 Wörter. The posts needs to sound unique compared to the previous 30 articles."
+                    )
+                },
+                {
+                  "role": "user", "content": (
+                      f"<Article Content>{content}</Article Content>\n\n<Context>"
+                        "<Aufgabe>Formuliere einen LinkedIn‑Beitrag, der auf Erkenntnisse des Artikels anspielt, "
+                        "ohne ihn nachzuerzählen. Biete 1–2 orginelle konkrete Tipps, wie KMU KI‑Agenten heute einsetzen können."
+                        "Halte Absätze bei 1–2 Sätzen. Schließe mit max. 3 relevanten Hashtags wie "
+                        "#KI #KMU #Digitalisierung.</Aufgabe>\n"
+                        "<Constraints>Keine Clickbait‑Floskeln, kein Over‑Promise, keine Emojis.</Constraints>"
+                    )
+                }
             ],
-            temperature=0.9
+            temperature=0.7,
+
+
         )
         return response.choices[0].message.content
 

@@ -44,24 +44,53 @@ def check_environment():
 class NewsCollector:
     @staticmethod
     def get_recent_news() -> List[Dict]:
-        """Collect recent AI-related news from German sources"""
+        """Collect recent AI-related news from German sources with priority tiers"""
         one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         
-        query = (
-            '("Künstliche Intelligenz" OR "KI" OR ChatGPT)'
-            ' NOT ("KI-Newsletter" OR "ETFs" OR "OMR" OR "stadt-bremerhaven.de")'
-        )
+        # Common exclusions
+        exclusions = ' NOT ("KI-Newsletter" OR "ETFs" OR "OMR" OR "stadt-bremerhaven.de")'
         
-        print(f"Fetching news with query: {query}")
-        print(f"From date: {one_day_ago}")
+        # Priority tiers
+        priority_1_query = '"ki-agenten"' + exclusions
+        priority_2_query = '("Künstliche Intelligenz" AND "Unternehmen")' + exclusions
+        priority_3_query = '"Künstliche Intelligenz"' + exclusions
         
-        articles = newsapi.get_everything(
-            q=query,
+        articles = []
+        
+        # Try Priority 1
+        print("Fetching Priority 1 articles (KI-Agenten)...")
+        priority_1_articles = newsapi.get_everything(
+            q=priority_1_query,
             language='de',
             sort_by='relevancy',
-            page_size=20,  # Increased to have more articles to filter from
+            page_size=20,
             from_param=one_day_ago
         )
+        articles.extend(priority_1_articles['articles'])
+        
+        # If needed, try Priority 2
+        if len(articles) < 20:
+            print("Fetching Priority 2 articles (KI + Unternehmen)...")
+            priority_2_articles = newsapi.get_everything(
+                q=priority_2_query,
+                language='de',
+                sort_by='relevancy',
+                page_size=20 - len(articles),
+                from_param=one_day_ago
+            )
+            articles.extend(priority_2_articles['articles'])
+            
+        # If still needed, try Priority 3
+        if len(articles) < 20:
+            print("Fetching Priority 3 articles (KI)...")
+            priority_3_articles = newsapi.get_everything(
+                q=priority_3_query,
+                language='de',
+                sort_by='relevancy',
+                page_size=20 - len(articles),
+                from_param=one_day_ago
+            )
+            articles.extend(priority_3_articles['articles'])
         
         # Filter articles to have max 2 per domain
         from urllib.parse import urlparse

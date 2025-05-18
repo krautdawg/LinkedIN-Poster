@@ -97,7 +97,7 @@ class NewsCollector:
         domain_count = {}
         filtered_articles = []
         
-        for article in articles['articles']:
+        for article in articles:
             domain = urlparse(article['url']).netloc
             if 'stadt-bremerhaven.de' in domain:
                 continue

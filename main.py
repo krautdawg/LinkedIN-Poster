@@ -314,7 +314,7 @@ async def handle_selection(update, context):
 
     try:
         selection = int(update.message.text)
-        if 1 <= selection <= 5:
+        if 1 <= selection <= 7:
             selected_post = SocialMedia.stored_posts['posts'][selection - 1]
             await update.message.reply_text(
                 f"Selected Article {selection}:\n\n"

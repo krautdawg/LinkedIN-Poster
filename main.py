@@ -51,9 +51,9 @@ class NewsCollector:
         exclusions = ' NOT ("KI-Newsletter" OR "ETFs" OR "OMR" OR "stadt-bremerhaven.de")'
         
         # Priority tiers
-        priority_1_query = '"ki-agenten"' + exclusions
+        priority_1_query = '"ki-agenten" OR "vibe code"' + exclusions
         priority_2_query = '("Künstliche Intelligenz" AND "Unternehmen")' + exclusions
-        priority_3_query = '"Künstliche Intelligenz"' + exclusions
+        priority_3_query = '"Künstliche Intelligenz" OR "KI" OR "ChatGPT" OR "Perplexity.io" OR "Anthropic" OR "Grok"' + exclusions
         
         articles = []
         
@@ -105,7 +105,7 @@ class NewsCollector:
                 filtered_articles.append(article)
                 domain_count[domain] = 1
                 
-            if len(filtered_articles) >= 7:
+            if len(filtered_articles) >= 5:
                 break
                 
         print(f"Total articles found after filtering: {len(filtered_articles)}")
@@ -118,7 +118,7 @@ class NewsCollector:
         else:
             print("No articles found!")
         
-        return filtered_articles[:7]
+        return filtered_articles[:5]
 
 class ContentGenerator:
     @staticmethod
@@ -148,15 +148,15 @@ class ContentGenerator:
                     "role": "system",
                     "content": (
                         "Du bist professioneller Content‑Stratege & Texter für einen KI‑Agent‑Berater. "
-                        "Deine Posts sind knapp, charmant ironisch‑freundlich (kein Zynismus), inspirieren KMU‑Entscheider, "
-                        "und enthalten KEINE Emojis. Du schreibst informell im Du‑Stil, unter 120 Wörter. The posts needs to sound unique compared to the previous 30 articles."
+                        "Deine Posts sind knapp, charmant und lustig, inspirieren KMU‑Entscheider, "
+                        "und enthalten KEINE Emojis. Du schreibst informell im Du‑Stil, unter 250 Wörter. The posts needs to sound unique compared to the previous 30 articles."
                     )
                 },
                 {
                   "role": "user", "content": (
                       f"<Article Content>{content}</Article Content>\n\n<Context>"
                         "<Aufgabe>Formuliere einen LinkedIn‑Beitrag, der auf Erkenntnisse des Artikels anspielt, "
-                        "ohne ihn nachzuerzählen. Biete 1–2 orginelle konkrete Tipps, wie KMU KI‑Agenten heute einsetzen können."
+                        "ohne ihn nachzuerzählen. Mache einen Vorschlag basierend auf den Artikel wie KMU KI‑Agenten oder Künstliche Intelligenz heute einsetzen können."
                         "Halte Absätze bei 1–2 Sätzen. Schließe mit max. 3 relevanten Hashtags wie "
                         "#KI #KMU #Digitalisierung.</Aufgabe>\n"
                         "<Constraints>Keine Clickbait‑Floskeln, kein Over‑Promise, keine Emojis.</Constraints>"

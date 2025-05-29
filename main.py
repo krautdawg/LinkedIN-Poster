@@ -320,6 +320,7 @@ class SocialMedia:
 
         except Exception as e:
             error_message = str(e)
+            error_code = getattr(e, 'response', {}).get('status_code', 'Unknown')
 
             if hasattr(e, 'response'):
                 try:

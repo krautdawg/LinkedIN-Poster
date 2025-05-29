@@ -243,7 +243,7 @@ class SocialMedia:
             sys.exit(1)
 
     @staticmethod
-    async def post_to_linkedin(post_content: str, source_url: str, title: str = "AI News Article") -> bool:
+    async def post_to_linkedin(post_content: str, source_url: str, title: str = "AI News Article"):
         """Post content to LinkedIn"""
         if not Config.LINKEDIN_ACCESS_TOKEN or not Config.LINKEDIN_MEMBER_ID:
             raise Exception("LinkedIn credentials not found in environment variables")
@@ -314,9 +314,15 @@ class SocialMedia:
             if response.status_code == 201:
                 print("Successfully posted to LinkedIn!")
                 return True
-            print(f"Failed to post to LinkedIn. Status Code: {response.status_code}")
-            print(f"Response: {response.text}")
-            return False
+            elif response.status_code == 401:
+                error_msg = "LinkedIn access token has expired. Please refresh your token."
+                print(f"Failed to post to LinkedIn. Status Code: {response.status_code}")
+                print(f"Response: {response.text}")
+                return error_msg
+            else:
+                print(f"Failed to post to LinkedIn. Status Code: {response.status_code}")
+                print(f"Response: {response.text}")
+                return f"LinkedIn API error (Status {response.status_code}). Check logs for details."
 
         except Exception as e:
             error_message = str(e)
@@ -329,12 +335,19 @@ class SocialMedia:
                     print(f"Message: {error_message}")
                     print(f"Full API Response: {error_details}")
                     print(f"Raw Response: {e.response.text}")
+                    
+                    # Check if it's a 401 error in the exception
+                    if error_code == 401 or "401" in str(e) or "EXPIRED_ACCESS_TOKEN" in str(e):
+                        return "LinkedIn access token has expired. Please refresh your token."
+                    else:
+                        return f"LinkedIn API error: {error_message}"
                 except Exception as parse_error:
                     print(f"LinkedIn API Error [{error_code}]: {error_message}")
                     print(f"Could not parse response: {str(parse_error)}")
+                    return f"LinkedIn API error: {error_message}"
             else:
                 print(f"LinkedIn API Error: {error_message}")
-            return False
+                return f"LinkedIn connection error: {error_message}"
 
 async def handle_selection(update, context):
     """Handle user selection of posts"""
@@ -357,8 +370,8 @@ async def handle_selection(update, context):
             # Get title from the source URL
             articles = NewsCollector.get_recent_news()
             title = next((article['title'] for article in articles if article['url'] == selected_post['sourceUrl']), "AI News Article")
-            success = await SocialMedia.post_to_linkedin(post_content, selected_post['sourceUrl'], title)
-            if success:
+            result = await SocialMedia.post_to_linkedin(post_content, selected_post['sourceUrl'], title)
+            if result == True:
                 from db_manager import PostDatabase
                 PostDatabase.store_post({
                     "content": post_content,
@@ -366,7 +379,13 @@ async def handle_selection(update, context):
                     "title": title,
                     "platform": "linkedin"
                 })
-            status_message = "Successfully posted to LinkedIn!" if success else "Failed to post to LinkedIn. Please check the logs."
+                status_message = "Successfully posted to LinkedIn!"
+            elif isinstance(result, str):
+                # Specific error message returned
+                status_message = f"Failed to post to LinkedIn: {result}"
+            else:
+                status_message = "Failed to post to LinkedIn. Please check the logs."
+            
             print(status_message)
             await context.bot.send_message(
                 chat_id=Config.TELEGRAM_CHAT_ID,

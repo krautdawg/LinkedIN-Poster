@@ -6,7 +6,7 @@ import os
 import sys
 from typing import Dict, List
 
-import openai
+from openai import OpenAI
 import requests
 from linkedin_api.clients.restli.client import RestliClient
 from newsapi.newsapi_client import NewsApiClient
@@ -18,22 +18,25 @@ logging.getLogger("telegram").setLevel(logging.WARNING)
 
 # Environment variables
 class Config:
-    OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+    XAI_API_KEY = os.environ.get('XAI_API_KEY')
     NEWS_API_KEY = os.environ.get('NEWS_API_KEY')
     TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
     TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
     LINKEDIN_ACCESS_TOKEN = os.environ.get('LINKEDIN_ACCESS_TOKEN')
     LINKEDIN_MEMBER_ID = os.environ.get('LINKEDIN_MEMBER_ID')
-    # Initialize APIs
-openai.api_key = Config.OPENAI_API_KEY
+    # Initialize X-AI client
+xai_client = OpenAI(
+    api_key=Config.XAI_API_KEY,
+    base_url="https://api.x.ai/v1"
+)
 newsapi = NewsApiClient(api_key=Config.NEWS_API_KEY)
 
 def check_environment():
     """Verify all required environment variables are set"""
-    if not all([Config.OPENAI_API_KEY, Config.NEWS_API_KEY, Config.TELEGRAM_BOT_TOKEN, Config.TELEGRAM_CHAT_ID]):
+    if not all([Config.XAI_API_KEY, Config.NEWS_API_KEY, Config.TELEGRAM_BOT_TOKEN, Config.TELEGRAM_CHAT_ID]):
         sys.stderr.write("""
         Missing required keys. Please set:
-        - OPENAI_API_KEY
+        - XAI_API_KEY
         - NEWS_API_KEY
         - TELEGRAM_BOT_TOKEN
         - TELEGRAM_CHAT_ID
@@ -141,8 +144,8 @@ class ContentGenerator:
         stored_posts = PostDatabase.get_all_posts()
         stored_posts_text = "\n\n".join([post.get('content', '') for post in stored_posts[-30:]])  # Last 30 posts
         
-        response = openai.chat.completions.create(
-            model="gpt-4.5-preview",
+        response = xai_client.chat.completions.create(
+            model="grok-3",
             messages=[
                 {
                     "role": "system",

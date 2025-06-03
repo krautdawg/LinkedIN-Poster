@@ -152,7 +152,10 @@ class ContentGenerator:
                     "content": (
                         "Du bist professioneller Content‑Stratege & Texter für einen KI‑Agent‑Berater. "
                         "Deine Posts sind knapp, charmant und lustig, inspirieren KMU‑Entscheider, "
-                        "und enthalten KEINE Emojis. Du schreibst informell im Du‑Stil, unter 250 Wörter. The posts needs to sound unique compared to the previous 30 articles."
+                        "und enthalten KEINE Emojis. Du schreibst informell im Du‑Stil, unter 250 Wörter. "
+                        "Vermeide Standard-Eröffnungen wie 'Hey' oder 'Hast du schon mal'. "
+                        "Beginne direkt mit einem interessanten Fakt oder einer provokanten Aussage. "
+                        "The posts needs to sound unique compared to the previous 30 articles."
                     )
                 },
                 {

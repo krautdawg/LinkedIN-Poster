@@ -144,7 +144,7 @@ class ContentGenerator:
         stored_posts_text = "\n\n".join([post.get('content', '') for post in stored_posts[-30:]])  # Last 30 posts
         
         response = openai_client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4.5",
             messages=[
                 {
                     "role": "system",

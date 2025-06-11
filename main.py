@@ -177,8 +177,7 @@ class ContentGenerator:
                  "#KI #KMU #Digitalisierung.</Aufgabe>\n"
                  "<Constraints>Keine Clickbait‑Floskeln, kein Over‑Promise, keine Emojis.</Constraints>"
                  )
-            }],
-            temperature=0.7)
+            }])
         return response.choices[0].message.content
 
 

@@ -172,7 +172,7 @@ class ContentGenerator:
                 "content":
                 (f"<Article Content>{content}</Article Content>\n\n<Context>"
                  "<Aufgabe>Formuliere einen LinkedIn‑Beitrag, der auf Erkenntnisse des Artikels anspielt, "
-                 "ohne ihn nachzuerzählen. Mache einen Vorschlag basierend auf den Artikel wie KMU KI‑Agenten oder Künstliche Intelligenz heute einsetzen können."
+                 "ohne ihn nachzuerzählen. Wenn passend, mache einen Vorschlag basierend auf den Artikel wie KMU KI‑Agenten oder Künstliche Intelligenz heute einsetzen können.  Wenn es nicht zum Artikel pass erzähle eine Anekdote oder einen Witz der zum Artikel passt. "
                  "Halte Absätze bei 1–2 Sätzen. Schließe mit max. 3 relevanten Hashtags wie "
                  "#KI #KMU #Digitalisierung.</Aufgabe>\n"
                  "<Constraints>Keine Clickbait‑Floskeln, kein Over‑Promise, keine Emojis.</Constraints>"

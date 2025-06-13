@@ -58,7 +58,7 @@ class NewsCollector:
                        datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
         # Common exclusions
-        exclusions = ' NOT ("KI-Newsletter" OR "ETFs" OR "OMR" OR "stadt-bremerhaven.de" OR "googlewatchblog.de")'
+        exclusions = ' NOT ("KI-Newsletter" OR "ETFs" OR "OMR" OR "stadt-bremerhaven.de" OR "googlewatchblog.de" OR "basicthinking.de")'
 
         # Priority tiers
         priority_1_query = '"ki-agenten" OR "vibe code"' + exclusions
